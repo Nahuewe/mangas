@@ -43,3 +43,28 @@ th {
     width: 100%;
     white-space: nowrap; /* Evitar el salto de línea de las celdas */
 }
+
+.titulo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.rainbow-text {
+    background-image: linear-gradient(to left, violet, indigo, blue, green, orange, red);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow-animation 10s infinite linear;
+    background-size: 200% 100%;
+}
+
+@keyframes rainbow-animation {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}

@@ -39,22 +39,39 @@ function previewExcel(filePath) {
 function filterTable(searchText) {
     // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll("#preview table tr");
+    let noResults = true;
 
     // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
-    rows.forEach(function (row) {
-        const cells = row.querySelectorAll("td");
-        let rowMatch = false;
-        cells.forEach(function (cell) {
-            if (cell.textContent.toLowerCase().includes(searchText)) {
-                rowMatch = true;
+    for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
+        if (index === 0) {
+            row.style.display = "";
+        } else if (index < 94) {
+            const cells = row.querySelectorAll("td");
+            let rowMatch = false;
+            cells.forEach(function (cell) {
+                if (cell.textContent.toLowerCase().includes(searchText)) {
+                    rowMatch = true;
+                    noResults = false;
+                }
+            });
+            if (rowMatch) {
+                row.style.display = ""; // Mostrar la fila si coincide con el texto de búsqueda
+            } else {
+                row.style.display = "none"; // Ocultar la fila si no coincide con el texto de búsqueda
             }
-        });
-        if (rowMatch) {
-            row.style.display = ""; // Mostrar la fila
         } else {
-            row.style.display = "none"; // Ocultar la fila
+            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
         }
-    });
+    }
+
+    // Mostrar o ocultar el mensaje de "No se encontraron resultados"
+    const noResultsMessage = document.getElementById("noResultsMessage");
+    if (noResults) {
+        noResultsMessage.style.display = ""; // Mostrar el mensaje
+    } else {
+        noResultsMessage.style.display = "none"; // Ocultar el mensaje
+    }
 }
 
 function applyStylesToTable() {
@@ -66,7 +83,7 @@ function applyStylesToTable() {
         const rowCount = document.querySelector("#preview table tr").cells.length;
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
-        
+
         if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
@@ -78,9 +95,6 @@ function applyStylesToTable() {
             cell.style.color = "#ff6f00";
         } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 94 && rowIndex !== 94) {
             cell.style.backgroundColor = "#95DFDB";
-        } else if (rowIndex === 0 || rowIndex === 94) {
-            cell.style.backgroundColor = "#7030A0";
-            cell.style.color = "#ffffff";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
 
@@ -101,7 +115,7 @@ function applyStylesToTable() {
             else if (cellContent.toLowerCase().includes("ivrea")) {
                 cell.style.backgroundColor = "#FF33CC";
                 cell.style.color = "#ffffff";
-            }  else if (cellContent.toLowerCase().includes("panini")) {
+            } else if (cellContent.toLowerCase().includes("panini")) {
                 cell.style.backgroundColor = "#70AD47";
                 cell.style.color = "#ffffff";
             } else if (cellContent.toLowerCase().includes("kemuri")) {
@@ -131,20 +145,20 @@ function applyStylesToTable() {
 
             // Tamaño
 
-            if (cellContent.toLowerCase().includes("b6")) {
-                cell.style.backgroundColor = "#0EAE02";
-            } else if (cellContent.toLowerCase().includes("c6")) {
-                cell.style.backgroundColor = "#FFE699";
-            } else if (cellContent.toLowerCase().includes("a5")) {
-                cell.style.backgroundColor = "#FF0066";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("b6x2")) {
-                cell.style.backgroundColor = "#A9D18E";
-            } else if (cellContent.toLowerCase().includes("c6x2")) {
-                cell.style.backgroundColor = "#FFD966";
-            } else if (cellContent.toLowerCase().includes("a5 color")) {
+            if (cellContent.includes("a5 color")) {
                 cell.style.backgroundColor = "#FF5050";
                 cell.style.color = "#ffffff";
+            } else if (cellContent.includes("a5")) {
+                cell.style.backgroundColor = "#FF0066";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.includes("c6x2")) {
+                cell.style.backgroundColor = "#FFD966";
+            } else if (cellContent.includes("b6x2")) {
+                cell.style.backgroundColor = "#A9D18E";
+            } else if (cellContent.includes("c6")) {
+                cell.style.backgroundColor = "#FFE699";
+            } else if (cellContent.includes("b6")) {
+                cell.style.backgroundColor = "#0EAE02";
             }
 
             // Tomos totales
@@ -155,6 +169,18 @@ function applyStylesToTable() {
             } else if (cellContent.toLowerCase().includes("finalizado")) {
                 cell.style.backgroundColor = "#E7E6E6";
             }
+        }
+        
+        // Aplicar estilos a la fila 0
+        if (rowIndex === 0) {
+            cell.style.backgroundColor = "#7030A0";
+            cell.style.color = "#ffffff";
+        }
+
+        // Aplicar estilos a la fila 94 (excluir columna 11)
+        if (rowIndex === 94 && columnIndex <= 9) {
+            cell.style.backgroundColor = "#7030A0";
+            cell.style.color = "#ffffff";
         }
     });
 }
