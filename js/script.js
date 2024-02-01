@@ -1,7 +1,6 @@
-// script.js
 window.onload = function () {
     // Path al archivo Excel que deseas previsualizar
-    const excelFilePath = './assets/Mangas.xlsx';
+    const excelFilePath = '../assets/Mangas.xlsx';
 
     // Llamada a la función para previsualizar el archivo Excel
     previewExcel(excelFilePath);
@@ -29,6 +28,9 @@ function previewExcel(filePath) {
         document.getElementById("searchInput").addEventListener("input", function () {
             filterTable(this.value.toLowerCase());
         });
+
+        // Aplicar estilos adicionales a la tabla
+        applyStylesToTable();
     };
 
     req.onerror = function (e) {
@@ -58,3 +60,76 @@ function filterTable(searchText) {
         }
     });
 }
+
+// script.js
+function applyStylesToTable() {
+    // Obtener todas las celdas de la tabla
+    const cells = document.querySelectorAll("#preview table td");
+
+    // Iterar sobre cada celda y aplicar los estilos según su contenido
+    cells.forEach(function (cell, index) {
+        const rowCount = document.querySelector("#preview table tr").cells.length;
+        const columnIndex = index % rowCount;
+        const rowIndex = Math.floor(index / rowCount);
+
+        // 
+
+        // Verificar si la celda está en la columna 4 y en las filas 2 a 96 (excepto la fila 95)
+        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+            cell.style.backgroundColor = "#A5A5A5";
+            cell.style.color = "#ffffff";
+        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+            cell.style.backgroundColor = "#F2F2F2";
+            cell.style.color = "#ff8000";
+        } else if (rowIndex === 0 || rowIndex === 94) {
+            cell.style.backgroundColor = "#7030A0";
+            cell.style.color = "#ffffff";
+        } else {
+            const cellContent = cell.textContent.trim().toLowerCase();
+            // Estados
+            if (cellContent.toLowerCase().includes("en curso")) {
+                cell.style.backgroundColor = "#FFCC99";
+            } else if (cellContent.toLowerCase().includes("completado")) {
+                cell.style.backgroundColor = "#C6EFCE";
+            } else if (cellContent.toLowerCase().includes("droppeado")) {
+                cell.style.backgroundColor = "#FFC7CE";
+            } else if (cellContent.toLowerCase().includes("tomo único")) {
+                cell.style.backgroundColor = "#FFEB9C";
+            }
+
+            // Editoriales
+
+            else if (cellContent.toLowerCase().includes("ivrea")) {
+                cell.style.backgroundColor = "#FF33CC";
+                cell.style.color = "#ffffff";
+            }  else if (cellContent.toLowerCase().includes("panini")) {
+                cell.style.backgroundColor = "#70AD47";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("kemuri")) {
+                cell.style.backgroundColor = "#FF9966";
+            } else if (cellContent.toLowerCase().includes("distrito manga")) {
+                cell.style.backgroundColor = "#8FAADC";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("ovni press")) {
+                cell.style.backgroundColor = "#7030A0";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("planeta cómic")) {
+                cell.style.backgroundColor = "#3333CC";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("utopia")) {
+                cell.style.backgroundColor = "#0099CC";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("merci")) {
+                cell.style.backgroundColor = "#333300";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("milky way")) {
+                cell.style.backgroundColor = "#003366";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("moztros")) {
+                cell.style.backgroundColor = "#FF0000";
+                cell.style.color = "#ffffff";
+            } 
+        }
+    });
+}
+
