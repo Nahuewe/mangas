@@ -1,3 +1,10 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 table {
     border-collapse: collapse;
     font-family: sans-serif;
@@ -14,9 +21,25 @@ th {
     background-color: #f2f2f2;
 }
 
+#preview {
+    overflow-x: auto;
+    padding: 1em;
+}
+
+#preview table {
+    width: 100%;
+    white-space: normal; /* Evitar el salto de línea de las celdas */
+}
+
+@media only screen and (max-width: 600px) {
+    #preview table {
+        width: auto;
+        white-space: nowrap; /* Permitir el salto de línea de las celdas */
+    }
+}
+
 #searchContainer {
     margin-top: 1rem;
-    margin-bottom: 1rem;
 }
 
 #searchInput {
@@ -24,7 +47,8 @@ th {
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 300px;
+    width: 250px;
+    margin-left: 1rem;
 }
 
 #searchInput::placeholder {
@@ -35,13 +59,51 @@ th {
     border-color: dodgerblue;
 }
 
-#preview {
-    overflow-x: auto;
+#downloadButton {
+    padding: 8px 16px;
+    font-size: 16px;
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-#preview table {
+#downloadButton:hover {
+    background-color: royalblue;
+}
+
+/* Estilos para el indicador de carga */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    white-space: nowrap; /* Evitar el salto de línea de las celdas */
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#content {
+    display: none; /* Oculta el contenido hasta que se cargue */
 }
 
 .titulo {

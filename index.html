@@ -19,9 +19,17 @@
 
     <div id="searchContainer">
         <input type="text" id="searchInput" placeholder="Filtrar">
+        <button id="downloadButton">Descargar</button>
     </div>
 
-    <div id="preview"></div>
+    <section>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loader"></div>
+        </div>
+        <div id="content">
+            <div id="preview"></div>
+        </div>
+    </section>
 
     <div id="noResultsMessage" style="display: none;">
         <h1 class="rainbow-text titulo">

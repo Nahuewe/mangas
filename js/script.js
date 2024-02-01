@@ -1,4 +1,11 @@
 window.onload = function () {
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const content = document.getElementById("content");
+    setTimeout(function () {
+        loadingOverlay.style.display = "none";
+        content.style.display = "block";
+    }, 200);
+
     // Path al archivo Excel
     const excelFilePath = './assets/Mangas.xlsx';
     previewExcel(excelFilePath);
@@ -25,6 +32,11 @@ function previewExcel(filePath) {
             filterTable(this.value.toLowerCase());
         });
 
+        // Agregar el evento de escucha al botón de descarga de Excel
+        document.getElementById("downloadButton").addEventListener("click", function () {
+            downloadExcel();
+        });
+
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
     };
@@ -39,20 +51,20 @@ function previewExcel(filePath) {
 function filterTable(searchText) {
     // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll("#preview table tr");
-    let noResults = true;
+    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
 
     // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
     for (let index = 0; index < rows.length; index++) {
         const row = rows[index];
         if (index === 0) {
-            row.style.display = "";
+            row.style.display = ""; // Mostrar la fila de encabezado
         } else if (index < 94) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
                 if (cell.textContent.toLowerCase().includes(searchText)) {
                     rowMatch = true;
-                    noResults = false;
+                    anyRowMatch = true; // Al menos una fila coincide con el filtro
                 }
             });
             if (rowMatch) {
@@ -65,13 +77,19 @@ function filterTable(searchText) {
         }
     }
 
-    // Mostrar o ocultar el mensaje de "No se encontraron resultados"
+    // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
-    if (noResults) {
-        noResultsMessage.style.display = ""; // Mostrar el mensaje
+    if (!anyRowMatch) {
+        noResultsMessage.style.display = ""; // Mostrar el mensaje si no hay filas que coincidan con el filtro
     } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje
+        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
     }
+}
+
+function downloadExcel() {
+    // Función para descargar el archivo Excel
+    const excelFilePath = './assets/Mangas.xlsx';
+    window.location.href = excelFilePath;
 }
 
 function applyStylesToTable() {
@@ -170,7 +188,7 @@ function applyStylesToTable() {
                 cell.style.backgroundColor = "#E7E6E6";
             }
         }
-        
+
         // Aplicar estilos a la fila 0
         if (rowIndex === 0) {
             cell.style.backgroundColor = "#7030A0";
