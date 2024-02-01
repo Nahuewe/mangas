@@ -1,7 +1,7 @@
 // script.js
 window.onload = function () {
     // Path al archivo Excel que deseas previsualizar
-    const excelFilePath = '../assets/Mangas.xlsx';
+    const excelFilePath = './assets/Mangas.xlsx';
 
     // Llamada a la función para previsualizar el archivo Excel
     previewExcel(excelFilePath);
