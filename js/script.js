@@ -1,8 +1,6 @@
 window.onload = function () {
-    // Path al archivo Excel que deseas previsualizar
-    const excelFilePath = '../assets/Mangas.xlsx';
-
-    // Llamada a la función para previsualizar el archivo Excel
+    // Path al archivo Excel
+    const excelFilePath = './assets/Mangas.xlsx';
     previewExcel(excelFilePath);
 };
 
@@ -15,8 +13,6 @@ function previewExcel(filePath) {
     req.onload = function (e) {
         const data = new Uint8Array(req.response);
         const workbook = XLSX.read(data, { type: "array" });
-
-        // Mostrar la primera hoja del archivo Excel en la página
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const html = XLSX.utils.sheet_to_html(sheet);
@@ -61,7 +57,6 @@ function filterTable(searchText) {
     });
 }
 
-// script.js
 function applyStylesToTable() {
     // Obtener todas las celdas de la tabla
     const cells = document.querySelectorAll("#preview table td");
@@ -71,22 +66,26 @@ function applyStylesToTable() {
         const rowCount = document.querySelector("#preview table tr").cells.length;
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
-
-        // 
-
-        // Verificar si la celda está en la columna 4 y en las filas 2 a 96 (excepto la fila 95)
+        
         if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
         } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
             cell.style.backgroundColor = "#F2F2F2";
-            cell.style.color = "#ff8000";
+            cell.style.color = "#ff6f00";
+        } else if (columnIndex === 6 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+            cell.style.backgroundColor = "#F2F2F2";
+            cell.style.color = "#ff6f00";
+        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 94 && rowIndex !== 94) {
+            cell.style.backgroundColor = "#95DFDB";
         } else if (rowIndex === 0 || rowIndex === 94) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
+
             // Estados
+
             if (cellContent.toLowerCase().includes("en curso")) {
                 cell.style.backgroundColor = "#FFCC99";
             } else if (cellContent.toLowerCase().includes("completado")) {
@@ -128,7 +127,34 @@ function applyStylesToTable() {
             } else if (cellContent.toLowerCase().includes("moztros")) {
                 cell.style.backgroundColor = "#FF0000";
                 cell.style.color = "#ffffff";
-            } 
+            }
+
+            // Tamaño
+
+            if (cellContent.toLowerCase().includes("b6")) {
+                cell.style.backgroundColor = "#0EAE02";
+            } else if (cellContent.toLowerCase().includes("c6")) {
+                cell.style.backgroundColor = "#FFE699";
+            } else if (cellContent.toLowerCase().includes("a5")) {
+                cell.style.backgroundColor = "#FF0066";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("b6x2")) {
+                cell.style.backgroundColor = "#A9D18E";
+            } else if (cellContent.toLowerCase().includes("c6x2")) {
+                cell.style.backgroundColor = "#FFD966";
+            } else if (cellContent.toLowerCase().includes("a5 color")) {
+                cell.style.backgroundColor = "#FF5050";
+                cell.style.color = "#ffffff";
+            }
+
+            // Tomos totales
+
+            if (cellContent.toLowerCase().includes("en publicacion")) {
+                cell.style.backgroundColor = "#4472C4";
+                cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("finalizado")) {
+                cell.style.backgroundColor = "#E7E6E6";
+            }
         }
     });
 }

@@ -1,7 +1,7 @@
-/* Estilos generales de la tabla y celdas */
 table {
     border-collapse: collapse;
-    font-family: Arial, sans-serif;
+    font-family: sans-serif;
+    font-weight: 500;
 }
 
 th, td {
@@ -14,19 +14,11 @@ th {
     background-color: #f2f2f2;
 }
 
-/* Estilo para la primera fila */
-tr:first-child {
-    background-color: #7030A0;
-    color: white;
-}
-
-/* Estilo para el contenedor del buscador */
 #searchContainer {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
 
-/* Estilo para el input de búsqueda */
 #searchInput {
     padding: 8px;
     font-size: 16px;
@@ -35,23 +27,19 @@ tr:first-child {
     width: 300px;
 }
 
-/* Estilo para el texto del placeholder del input de búsqueda */
 #searchInput::placeholder {
-    color: #000; /* Color gris claro */
+    color: #000;
 }
 
-/* Estilo para el texto del input de búsqueda */
 #searchInput:focus {
-    border-color: dodgerblue; /* Color del borde cuando el input está enfocado */
+    border-color: dodgerblue;
 }
 
-/* Estilo para la tabla */
 #preview {
-    overflow-x: auto; /* Habilitar el scroll horizontal si es necesario */
+    overflow-x: auto;
 }
 
-/* Estilo para los elementos internos de la tabla */
 #preview table {
-    width: 100%; /* Ancho máximo de la tabla */
+    width: 100%;
     white-space: nowrap; /* Evitar el salto de línea de las celdas */
 }
