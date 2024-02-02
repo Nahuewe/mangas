@@ -9,6 +9,36 @@ window.onload = function () {
     // Path al archivo Excel
     const excelFilePath = './assets/Mangas.xlsx';
     previewExcel(excelFilePath);
+
+    // Llenar el selector de filtro con las opciones de filtro al cargar la página
+    fillFilterSelect();
+};
+
+// Función para llenar el selector de filtro con las opciones de filtro
+function fillFilterSelect() {
+    const filterSelect = document.getElementById("filterSelect");
+
+    for (const filterName in filterOptions) {
+        if (filterOptions.hasOwnProperty(filterName)) {
+            const filterValues = filterOptions[filterName];
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = filterName;
+            filterValues.forEach(function (value) {
+                const option = document.createElement("option");
+                option.textContent = value;
+                option.value = value;
+                optgroup.appendChild(option);
+            });
+            filterSelect.appendChild(optgroup);
+        }
+    }
+}
+
+const filterOptions = {
+    "Estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
+    "Editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros"],
+    "Tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
+    "Tomos totales": ["En publicación", "Finalizado"]
 };
 
 function clearSearchInput() {
@@ -264,7 +294,7 @@ const suggestions = [
     "Madoka Magica",
     "Madoka Magica: Rebelion",
     "Madoka Magica: The Different Story",
-    "Madoka Magica: Homura´s Revenge",
+    "Madoka Magica: Homura's Revenge",
     "Boys Run The Riot",
     "Mientras Yubooh Duerme",
     "Quiero ser Asesinado por mi Alumna",
@@ -303,8 +333,8 @@ const suggestions = [
     "Uzumaki",
     "La Chica a la Orilla del Mar",
     "Look Back",
-    "Tatsuki Fujimoto´s Short Stories: 17-21",
-    "Tatsuki Fujimoto´s Short Stories: 22-26",
+    "Tatsuki Fujimoto's Short Stories: 17-21",
+    "Tatsuki Fujimoto's Short Stories: 22-26",
     "Para Vos, Nacido en la Tierra",
     "Miroirs",
     "Neko Wappa!",
@@ -371,21 +401,25 @@ searchInput.addEventListener("keydown", function(event) {
 // Evento para manejar el cambio en el filtro seleccionado
 const filterSelect = document.getElementById("filterSelect");
 
+
 filterSelect.addEventListener("change", function() {
-    const selectedFilter = this.value.toLowerCase();
-    const searchText = searchInput.value.toLowerCase();
-    
-    // Filtrar la tabla según el filtro seleccionado y el texto de búsqueda actual
-    filterTableByFilter(selectedFilter, searchText);
+    applyFilters();
 });
 
-// Función para filtrar la tabla según el filtro seleccionado
-function filterTableByFilter(filter, searchText) {
+searchInput.addEventListener("input", function() {
+    applyFilters();
+});
+
+// Función para aplicar los filtros seleccionados
+function applyFilters() {
+    const searchText = searchInput.value.toLowerCase();
+    const selectedFilters = getSelectedFilters();
+
     // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll("#preview table tr");
-    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
+    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con los filtros
 
-    // Recorrer todas las filas y verificar si alguna coincide con el filtro
+    // Recorrer todas las filas y verificar si alguna coincide con los filtros seleccionados
     for (let index = 0; index < rows.length; index++) {
         const row = rows[index];
         if (index === 0) {
@@ -394,65 +428,79 @@ function filterTableByFilter(filter, searchText) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell, cellIndex) {
-                // Verificar si el filtro seleccionado coincide con la columna actual
-                const columnIndex = getFilterIndex(filter);
-                if (cellIndex === columnIndex && cell.textContent.toLowerCase().includes(searchText)) {
+                // Verificar si el texto de búsqueda coincide y si alguna de las opciones seleccionadas coincide
+                if (cell.textContent.toLowerCase().includes(searchText) && filtersMatch(selectedFilters, cellIndex, cell.textContent.toLowerCase())) {
                     rowMatch = true;
-                    anyRowMatch = true; // Al menos una fila coincide con el filtro
+                    anyRowMatch = true; // Al menos una fila coincide con los filtros
                 }
             });
             if (rowMatch) {
-                row.style.display = ""; // Mostrar la fila si coincide con el filtro y el texto de búsqueda
+                row.style.display = ""; // Mostrar la fila si coincide con los filtros y el texto de búsqueda
             } else {
-                row.style.display = "none"; // Ocultar la fila si no coincide con el filtro o el texto de búsqueda
+                row.style.display = "none"; // Ocultar la fila si no coincide con los filtros o el texto de búsqueda
             }
         } else {
             row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
         }
     }
 
-    // Mostrar el mensaje de "No se encontraron resultados" si no hay filas que coincidan con el filtro
+    // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
     if (!anyRowMatch) {
-        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con el filtro
+        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
     } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
+        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
     }
+}
+
+// Función para obtener los filtros seleccionados por el usuario
+function getSelectedFilters() {
+    const selectedFilters = {};
+    const filterSelect = document.querySelectorAll("#filterSelect select");
+
+    filterSelect.forEach(function(select) {
+        const filterName = select.id;
+        const selectedOptions = [];
+        const options = select.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].selected) {
+                selectedOptions.push(options[i].textContent.toLowerCase());
+            }
+        }
+        selectedFilters[filterName] = selectedOptions;
+    });
+
+    return selectedFilters;
+}
+
+// Función para verificar si las opciones seleccionadas coinciden con el contenido de la celda
+function filtersMatch(selectedFilters, cellIndex, cellContent) {
+    for (const filterName in selectedFilters) {
+        if (selectedFilters.hasOwnProperty(filterName)) {
+            const selectedOptions = selectedFilters[filterName];
+            if (selectedOptions.length > 0) {
+                const columnIndex = getFilterIndex(filterName);
+                if (columnIndex === cellIndex && selectedOptions.includes(cellContent)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 // Función para obtener el índice de la columna según el filtro seleccionado
 function getFilterIndex(filter) {
     switch(filter) {
-        case "estado":
+        case "Estado":
             return 4; // Índice de la columna de Estado
-        case "editorial":
+        case "Editorial":
             return 5; // Índice de la columna de Editorial
-        case "tamaño":
+        case "Tamaño":
             return 6; // Índice de la columna de Tamaño
-        case "tomos Totales":
+        case "Tomos totales":
             return 10; // Índice de la columna de Tomos Totales
         default:
             return -1; // Valor por defecto para manejar filtros no válidos
     }
 }
-
-// Objeto que representa las secciones y opciones del filtro
-const filterOptions = {
-    "estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
-    "editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros"],
-    "tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
-    "tomos Totales": ["En publicación", "Finalizado"]
-};
-
-// Llenar el select del filtro con las secciones y opciones
-Object.keys(filterOptions).forEach(function(section) {
-    const sectionOption = document.createElement("optgroup");
-    sectionOption.label = section.charAt(0).toUpperCase() + section.slice(1); // Convertir la primera letra a mayúscula
-    filterOptions[section].forEach(function(option) {
-        const optionElement = document.createElement("option");
-        optionElement.value = option.toLowerCase().replace(/\s+/g, ''); // Convertir a minúsculas y eliminar espacios
-        optionElement.textContent = option;
-        sectionOption.appendChild(optionElement);
-    });
-    filterSelect.appendChild(sectionOption);
-});

@@ -21,8 +21,7 @@
         <label for="searchInput">
             <input type="text" id="searchInput" placeholder="Buscar">
             <button id="clearButton" onclick="clearSearchInput()">&#10006;</button>
-            <button id="downloadButton">Descargar</button>
-            <ul style="margin-left: 1rem;" id="autocompleteList"></ul>
+            <ul id="autocompleteList"></ul>
         </label>
     </div>
 
@@ -30,9 +29,10 @@
         <button id="filterButton">Filtros</button>
         <div id="filtersContainer" style="display: none;">
             <select id="filterSelect">
-                <option value="" disabled selected></option>
+                <option value="" hidden disabled selected>W.I.P</option>
             </select>
         </div>
+        <button id="downloadButton">Descargar</button>
     </div>
 
     <section>
