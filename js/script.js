@@ -11,6 +11,23 @@ window.onload = function () {
     previewExcel(excelFilePath);
 };
 
+function clearSearchInput() {
+    const searchInput = document.getElementById("searchInput");
+    searchInput.value = ""; // Limpiar el texto del input de búsqueda
+    filterTable(""); // Llamar a la función filterTable con una cadena vacía para restaurar la tabla
+}
+
+const filterButton = document.getElementById("filterButton");
+const filtersContainer = document.getElementById("filtersContainer");
+
+filterButton.addEventListener("click", function() {
+    if (filtersContainer.style.display === "none") {
+        filtersContainer.style.display = "block";
+    } else {
+        filtersContainer.style.display = "none";
+    }
+});
+
 function previewExcel(filePath) {
     // Leer el archivo Excel
     const req = new XMLHttpRequest();
@@ -332,6 +349,7 @@ autocompleteList.addEventListener("click", function(event) {
     const clickedSuggestion = event.target.textContent;
     searchInput.value = clickedSuggestion;
     autocompleteList.innerHTML = ""; // Limpiar la lista de sugerencias
+    filterTable(clickedSuggestion.toLowerCase()); // Filtrar la tabla con la sugerencia seleccionada
 });
 
 // Evento para autocompletar al presionar Enter
@@ -345,6 +363,96 @@ searchInput.addEventListener("keydown", function(event) {
 
         if (firstSuggestion) {
             searchInput.value = firstSuggestion;
+            filterTable(firstSuggestion.toLowerCase()); // Filtrar la tabla con la sugerencia seleccionada
         }
     }
+});
+
+// Evento para manejar el cambio en el filtro seleccionado
+const filterSelect = document.getElementById("filterSelect");
+
+filterSelect.addEventListener("change", function() {
+    const selectedFilter = this.value.toLowerCase();
+    const searchText = searchInput.value.toLowerCase();
+    
+    // Filtrar la tabla según el filtro seleccionado y el texto de búsqueda actual
+    filterTableByFilter(selectedFilter, searchText);
+});
+
+// Función para filtrar la tabla según el filtro seleccionado
+function filterTableByFilter(filter, searchText) {
+    // Obtener todas las filas de la tabla
+    const rows = document.querySelectorAll("#preview table tr");
+    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
+
+    // Recorrer todas las filas y verificar si alguna coincide con el filtro
+    for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
+        if (index === 0) {
+            row.style.display = ""; // Mostrar la fila de encabezado
+        } else if (index < 94) {
+            const cells = row.querySelectorAll("td");
+            let rowMatch = false;
+            cells.forEach(function (cell, cellIndex) {
+                // Verificar si el filtro seleccionado coincide con la columna actual
+                const columnIndex = getFilterIndex(filter);
+                if (cellIndex === columnIndex && cell.textContent.toLowerCase().includes(searchText)) {
+                    rowMatch = true;
+                    anyRowMatch = true; // Al menos una fila coincide con el filtro
+                }
+            });
+            if (rowMatch) {
+                row.style.display = ""; // Mostrar la fila si coincide con el filtro y el texto de búsqueda
+            } else {
+                row.style.display = "none"; // Ocultar la fila si no coincide con el filtro o el texto de búsqueda
+            }
+        } else {
+            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
+        }
+    }
+
+    // Mostrar el mensaje de "No se encontraron resultados" si no hay filas que coincidan con el filtro
+    const noResultsMessage = document.getElementById("noResultsMessage");
+    if (!anyRowMatch) {
+        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con el filtro
+    } else {
+        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
+    }
+}
+
+// Función para obtener el índice de la columna según el filtro seleccionado
+function getFilterIndex(filter) {
+    switch(filter) {
+        case "estado":
+            return 4; // Índice de la columna de Estado
+        case "editorial":
+            return 5; // Índice de la columna de Editorial
+        case "tamaño":
+            return 6; // Índice de la columna de Tamaño
+        case "tomos Totales":
+            return 10; // Índice de la columna de Tomos Totales
+        default:
+            return -1; // Valor por defecto para manejar filtros no válidos
+    }
+}
+
+// Objeto que representa las secciones y opciones del filtro
+const filterOptions = {
+    "estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
+    "editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros"],
+    "tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
+    "tomos Totales": ["En publicación", "Finalizado"]
+};
+
+// Llenar el select del filtro con las secciones y opciones
+Object.keys(filterOptions).forEach(function(section) {
+    const sectionOption = document.createElement("optgroup");
+    sectionOption.label = section.charAt(0).toUpperCase() + section.slice(1); // Convertir la primera letra a mayúscula
+    filterOptions[section].forEach(function(option) {
+        const optionElement = document.createElement("option");
+        optionElement.value = option.toLowerCase().replace(/\s+/g, ''); // Convertir a minúsculas y eliminar espacios
+        optionElement.textContent = option;
+        sectionOption.appendChild(optionElement);
+    });
+    filterSelect.appendChild(sectionOption);
 });
