@@ -55,8 +55,19 @@ filterButton.addEventListener("click", function() {
         filtersContainer.style.display = "block";
     } else {
         filtersContainer.style.display = "none";
+        // Limpiar el select al ocultar los filtros
+        clearFilterSelect();
+        // Restaurar la tabla al estado original
+        filterTable("");
     }
 });
+
+function clearFilterSelect() {
+    // Obtener el select de los filtros
+    const filterSelect = document.getElementById("filterSelect");
+    // Establecer el primer elemento como seleccionado
+    filterSelect.selectedIndex = 0;
+}
 
 function previewExcel(filePath) {
     // Leer el archivo Excel
@@ -126,10 +137,13 @@ function filterTable(searchText) {
 
     // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
+    const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
     if (!anyRowMatch) {
         noResultsMessage.style.display = ""; // Mostrar el mensaje si no hay filas que coincidan con el filtro
+        noResultsMessageFilter.style.display = "none";
     } else {
         noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
+        noResultsMessageFilter.style.display = "none";
     }
 }
 
@@ -446,10 +460,13 @@ function applyFilters() {
 
     // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
+    const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
     if (!anyRowMatch) {
-        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
+        noResultsMessageFilter.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
+        noResultsMessage.style.display = "none";
     } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
+        noResultsMessageFilter.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
+        noResultsMessage.style.display = "none";
     }
 }
 

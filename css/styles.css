@@ -266,6 +266,25 @@ th {
     }
 }
 
+.rainbow-text-inverse {
+    background-image: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow-animation-inverse 10s infinite linear;
+    background-size: 200% 100%;
+}
+
+@keyframes rainbow-animation-inverse {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 #content {
     display: none;
     /* Oculta el contenido hasta que se cargue */
