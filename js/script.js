@@ -41,6 +41,42 @@ const filterOptions = {
     "Tomos totales": ["En publicación", "Finalizado"]
 };
 
+// Función para ocultar las filas desde la 95 hacia abajo
+function hideHiddenRows() {
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+95)");
+    hiddenRows.forEach(row => {
+        row.style.display = "none";
+    });
+}
+
+function showHiddenRows() {
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+95)");
+    const button = document.getElementById("showHiddenRowsButton");
+
+    if (button.dataset.clicked === "true") {
+        hiddenRows.forEach(row => {
+            row.style.display = "table-row";
+        });
+    } else {
+        hiddenRows.forEach(row => {
+            row.style.display = "none";
+        });
+    }
+}
+
+const showHiddenRowsButton = document.getElementById("showHiddenRowsButton");
+
+showHiddenRowsButton.addEventListener("click", function () {
+    if (this.dataset.clicked === "true") {
+        this.dataset.clicked = "false";
+        this.textContent = "Mostrar Estadisticas";
+    } else {
+        this.dataset.clicked = "true";
+        this.textContent = "Ocultar Estadisticas";
+    }
+    showHiddenRows();
+});
+
 function clearSearchInput() {
     const searchInput = document.getElementById("searchInput");
     searchInput.value = ""; // Limpiar el texto del input de búsqueda
@@ -50,7 +86,7 @@ function clearSearchInput() {
 const filterButton = document.getElementById("filterButton");
 const filtersContainer = document.getElementById("filtersContainer");
 
-filterButton.addEventListener("click", function() {
+filterButton.addEventListener("click", function () {
     if (filtersContainer.style.display === "none") {
         filtersContainer.style.display = "block";
     } else {
@@ -97,6 +133,12 @@ function previewExcel(filePath) {
 
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
+
+        // Ocultar las filas desde la 95 hacia abajo al cargar la página
+        hideHiddenRows();
+
+        // Llenar el selector de filtro con las opciones de filtro al cargar la página
+        fillFilterSelect();
     };
 
     req.onerror = function (e) {
@@ -138,12 +180,15 @@ function filterTable(searchText) {
     // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
     const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
+    const showHiddenRowsButtonContainer = document.getElementById("showHiddenRowsButtonContainer");
     if (!anyRowMatch) {
         noResultsMessage.style.display = ""; // Mostrar el mensaje si no hay filas que coincidan con el filtro
         noResultsMessageFilter.style.display = "none";
+        showHiddenRowsButtonContainer.style.display = "none";
     } else {
         noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
         noResultsMessageFilter.style.display = "none";
+        showHiddenRowsButtonContainer.style.display = "none";
     }
 }
 
@@ -308,7 +353,7 @@ const suggestions = [
     "Madoka Magica",
     "Madoka Magica: Rebelion",
     "Madoka Magica: The Different Story",
-    "Madoka Magica: Homura's Revenge",
+    "Madoka Magica: Homura´s Revenge",
     "Boys Run The Riot",
     "Mientras Yubooh Duerme",
     "Quiero ser Asesinado por mi Alumna",
@@ -347,8 +392,8 @@ const suggestions = [
     "Uzumaki",
     "La Chica a la Orilla del Mar",
     "Look Back",
-    "Tatsuki Fujimoto's Short Stories: 17-21",
-    "Tatsuki Fujimoto's Short Stories: 22-26",
+    "Tatsuki Fujimoto´s Short Stories: 17-21",
+    "Tatsuki Fujimoto´s Short Stories: 22-26",
     "Para Vos, Nacido en la Tierra",
     "Miroirs",
     "Neko Wappa!",
@@ -364,7 +409,7 @@ const suggestions = [
     "Hot Paprika"
 ];
 
-searchInput.addEventListener("input", function() {
+searchInput.addEventListener("input", function () {
     filterTable(this.value.toLowerCase());
 });
 
@@ -389,7 +434,7 @@ searchInput.addEventListener("input", function () {
 });
 
 // Evento para autocompletar al hacer clic en una sugerencia
-autocompleteList.addEventListener("click", function(event) {
+autocompleteList.addEventListener("click", function (event) {
     const clickedSuggestion = event.target.textContent;
     searchInput.value = clickedSuggestion;
     autocompleteList.innerHTML = ""; // Limpiar la lista de sugerencias
@@ -397,7 +442,7 @@ autocompleteList.addEventListener("click", function(event) {
 });
 
 // Evento para autocompletar al presionar Enter
-searchInput.addEventListener("keydown", function(event) {
+searchInput.addEventListener("keydown", function (event) {
     const searchText = this.value.toLowerCase();
 
     if (event.key === "Enter") {
@@ -415,12 +460,11 @@ searchInput.addEventListener("keydown", function(event) {
 // Evento para manejar el cambio en el filtro seleccionado
 const filterSelect = document.getElementById("filterSelect");
 
-
-filterSelect.addEventListener("change", function() {
+filterSelect.addEventListener("change", function () {
     applyFilters();
 });
 
-searchInput.addEventListener("input", function() {
+searchInput.addEventListener("input", function () {
     applyFilters();
 });
 
@@ -461,12 +505,15 @@ function applyFilters() {
     // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
     const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
+    const showHiddenRowsButtonContainer = document.getElementById("showHiddenRowsButtonContainer");
     if (!anyRowMatch) {
         noResultsMessageFilter.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
         noResultsMessage.style.display = "none";
+        showHiddenRowsButtonContainer.style.display = "none";
     } else {
         noResultsMessageFilter.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
         noResultsMessage.style.display = "none";
+        showHiddenRowsButtonContainer.style.display = "block";
     }
 }
 
@@ -475,7 +522,7 @@ function getSelectedFilters() {
     const selectedFilters = {};
     const filterSelect = document.querySelectorAll("#filterSelect select");
 
-    filterSelect.forEach(function(select) {
+    filterSelect.forEach(function (select) {
         const filterName = select.id;
         const selectedOptions = [];
         const options = select.options;
@@ -508,7 +555,7 @@ function filtersMatch(selectedFilters, cellIndex, cellContent) {
 
 // Función para obtener el índice de la columna según el filtro seleccionado
 function getFilterIndex(filter) {
-    switch(filter) {
+    switch (filter) {
         case "Estado":
             return 4; // Índice de la columna de Estado
         case "Editorial":
