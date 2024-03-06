@@ -384,7 +384,7 @@ function applyStylesToTable() {
             cell.style.color = "#ffffff";
         }
 
-        // Aplicar estilos a la fila 94 (excluir columna 11)
+        // Aplicar estilos a la fila 100 (excluir columna 11)
         if (rowIndex === 100 && columnIndex <= 9) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
@@ -394,7 +394,7 @@ function applyStylesToTable() {
 
 // Función para ocultar las filas desde la 95 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+95)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -402,7 +402,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+95)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {

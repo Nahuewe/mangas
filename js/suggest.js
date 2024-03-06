@@ -138,5 +138,10 @@ const suggestions = [
     "Nude Model",
     "Home Far Away",
     "Boy Meets Maria",
-    "Hot Paprika"
+    "Hot Paprika",
+    "Reigen Nivel 131 de Espiritismo",
+    "K-ON!",
+    "Boyfriends",
+    "Burn The Witch",
+    
 ];
