@@ -288,16 +288,16 @@ function applyStylesToTable() {
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
-        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
             cell.style.backgroundColor = "#F2F2F2";
             cell.style.color = "#ff6f00";
-        } else if (columnIndex === 6 && rowIndex >= 1 && rowIndex <= 95 && rowIndex !== 94) {
+        } else if (columnIndex === 6 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
             cell.style.backgroundColor = "#F2F2F2";
             cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 94 && rowIndex !== 94) {
+        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
             cell.style.backgroundColor = "#95DFDB";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
@@ -345,6 +345,9 @@ function applyStylesToTable() {
             } else if (cellContent.toLowerCase().includes("moztros")) {
                 cell.style.backgroundColor = "#FF0000";
                 cell.style.color = "#ffffff";
+            } else if (cellContent.toLowerCase().includes("random comics")) {
+                cell.style.backgroundColor = "#ff99ff";
+                cell.style.color = "#000000";
             }
 
             // Tamaño
@@ -382,7 +385,7 @@ function applyStylesToTable() {
         }
 
         // Aplicar estilos a la fila 94 (excluir columna 11)
-        if (rowIndex === 94 && columnIndex <= 9) {
+        if (rowIndex === 100 && columnIndex <= 9) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         }
