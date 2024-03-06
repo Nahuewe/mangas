@@ -143,5 +143,5 @@ const suggestions = [
     "K-ON!",
     "Boyfriends",
     "Burn The Witch",
-    
+    "My Capricorn Friend"
 ];
