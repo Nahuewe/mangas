@@ -145,6 +145,22 @@ th {
     background-color: royalblue;
 }
 
+#discountButton {
+    padding: 8px 16px;
+    font-size: 16px;
+    background-color: #52fdb3;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-left: 1rem;
+}
+
+#discountButton:hover {
+    background-color: #41c78d;
+}
+
 /* Estilos para el indicador de carga */
 .loading-overlay {
     position: fixed;

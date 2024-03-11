@@ -277,6 +277,86 @@ function downloadExcel() {
     window.location.href = excelFilePath;
 }
 
+// Botón de descuento
+const discountButton = document.getElementById("discountButton");
+
+// Agregar evento de clic al botón de descuento
+discountButton.addEventListener("click", function () {
+    // Alternar entre mostrar el valor de venta y el valor de lista
+    toggleDiscount();
+});
+
+// Variable para almacenar los valores de venta y lista
+let saleValues = [];
+let listValues = [];
+
+// Variable para verificar si el descuento ya ha sido aplicado
+let discountApplied = false;
+
+// Función para aplicar un descuento del 20% a los valores numéricos de la columna 7
+function applyDiscountToColumnSeven() {
+    // Obtener todas las filas de la tabla
+    const rows = document.querySelectorAll("#preview table tr");
+
+    // Recorrer cada fila y aplicar el descuento a la celda correspondiente de la columna 7
+    rows.forEach(function (row, index) {
+        // Saltear la primera fila que es el encabezado
+        if (index === 0) return;
+
+        // Obtener el valor de la celda en la columna 7
+        const cell = row.querySelector("td:nth-child(7)");
+        const cellContent = cell.textContent.trim();
+
+        // Eliminar caracteres no numéricos y espacios
+        const numericValue = parseFloat(cellContent.replace(/[^0-9.-]+/g, ""));
+
+        // Verificar si el valor es numérico después de eliminar caracteres no numéricos
+        if (!isNaN(numericValue)) {
+            // Guardar el valor de venta original
+            saleValues.push("$ " + numericValue.toString());
+            // Aplicar descuento del 20%
+            const discountedValue = numericValue * 0.6; // Multiplicar por 0.8 para obtener el 80% del valor original
+            // Redondear el resultado a 2 decimales
+            const roundedDiscountedValue = Math.round(discountedValue * 100) / 100;
+            // Guardar el valor de lista
+            listValues.push("$ " + roundedDiscountedValue.toString());
+            // Actualizar el contenido de la celda con el nuevo valor
+            cell.textContent = listValues[listValues.length - 1];
+        } else {
+            console.log("El valor no es numérico o está vacío:", cellContent);
+        }
+    });
+}
+
+// Función para alternar entre mostrar el valor de venta y el valor de lista
+function toggleDiscount() {
+    if (!discountApplied) {
+        // Aplicar descuento a la columna 7
+        applyDiscountToColumnSeven();
+        // Marcar que el descuento ha sido aplicado
+        discountApplied = true;
+        // Cambiar el texto del botón a "Precio de Lista"
+        discountButton.textContent = "Precio de Lista";
+    } else {
+        // Mostrar el valor de venta original
+        showSaleValues();
+        // Marcar que el descuento ya no está aplicado
+        discountApplied = false;
+        // Cambiar el texto del botón de regreso a "Precio de Venta"
+        discountButton.textContent = "Precio de Venta";
+    }
+}
+
+// Función para mostrar los valores de venta
+function showSaleValues() {
+    const rows = document.querySelectorAll("#preview table tr");
+    rows.forEach(function (row, index) {
+        if (index === 0) return;
+        const cell = row.querySelector("td:nth-child(7)");
+        cell.textContent = saleValues[index - 1];
+    });
+}
+
 // Funcion para aplicar todos los estilos a la tabla
 function applyStylesToTable() {
     // Obtener todas las celdas de la tabla
