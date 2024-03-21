@@ -9,6 +9,8 @@
     <link rel="shortcut icon" type="./image/png" href="./assets/images/mangaFavicon.png">
     <!-- Visualizador de Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
+    <!-- Api de Google Sheet -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <!-- CSS -->
     <link rel="stylesheet" href="./css/styles.css">
     <!-- Titulo -->
@@ -24,6 +26,8 @@
             <ul id="autocompleteList"></ul>
         </label>
     </div>
+
+    <!-- <p>Última modificación del archivo: <span id="lastModified"></span></p> -->
 
     <div style="display: flex; margin-top: 1rem;">
         <button id="filterButton">Filtros</button>
@@ -58,7 +62,7 @@
     </div>
 
 
-    <script src="./js/script.js"></script>
+    <script src="./js/excel.js"></script>
     <script src="./js/suggest.js"></script>
     <!-- Visualizador de Excel -->
     <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>

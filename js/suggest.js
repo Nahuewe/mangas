@@ -57,7 +57,7 @@ const suggestions = [
     "Hikaru Ga Shinda Natsu",
     "Oshi no Ko",
     "Rooster Fighter",
-    "Dead Dead Demon's Dededede Destruction",
+    "Dead Dead Demon´s Dededede Destruction",
     "Museum",
     "Spy x Family",
     "Blue Lock",

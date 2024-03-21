@@ -1,6 +1,6 @@
 // Distribucion de funciones: carga de la pagina | Visualizacion de la tabla con formato Excel | Filtro general | Boton de "filtros" | Boton de "descargar" | Estilos de la tabla | Mostrar o esconder las tablas de estadisticas.
 
-// Funcion que se ejecuta al cargar la pagina
+// Función que se ejecuta al cargar la página
 window.onload = function () {
     const loadingOverlay = document.getElementById("loadingOverlay");
     const content = document.getElementById("content");
@@ -10,12 +10,27 @@ window.onload = function () {
     }, 200);
 
     // Path al archivo Excel
-    const excelFilePath = './assets/Mangas.xlsx';
+    const excelFilePath = 'https://docs.google.com/spreadsheets/d/1sstxQxFDH-a0zpk5EX1-kzvHId41LcBXtn5M4Kz4-is/edit#gid=1489277399';
     previewExcel(excelFilePath);
-
-    // Llenar el selector de filtro con las opciones de filtro al cargar la página
-    fillFilterSelect();
+    // getLastModified();
 };
+
+// Función para obtener la última fecha de modificación del archivo de Google Sheets
+// function getLastModified() {
+//     // ID del archivo de Google Sheets
+//     const spreadsheetId = '1sstxQxFDH-a0zpk5EX1-kzvHId41LcBXtn5M4Kz4-is';
+
+//     // Hacer una solicitud a la API de Google Sheets para obtener la información del archivo
+//     gapi.client.sheets.spreadsheets.get({
+//         spreadsheetId: spreadsheetId
+//     }).then(function(response) {
+//         const lastModified = response.result.properties.modifiedTime;
+//         // Insertar la fecha en el elemento HTML
+//         document.getElementById("lastModified").textContent = lastModified;
+//     }, function(reason) {
+//         console.error('Error al obtener información del archivo:', reason.result.error.message);
+//     });
+// }
 
 // Funcion donde se edita todo lo que se visualiza dentro de las tablas
 function previewExcel(filePath) {
@@ -47,7 +62,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 95 hacia abajo al cargar la página
+        // Ocultar las filas desde la 102 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -57,7 +72,7 @@ function previewExcel(filePath) {
         const buttonContainer = document.createElement("div");
         buttonContainer.id = "showHiddenRowsButtonContainer";
         buttonContainer.className = "showHiddenRowsButtonContainer";
-
+        
         // Crear y agregar el botón de mostrar estadísticas al contenedor
         const showHiddenRowsButton = document.createElement("button");
         showHiddenRowsButton.id = "showHiddenRowsButton";
@@ -72,10 +87,10 @@ function previewExcel(filePath) {
             }
             showHiddenRows();
         });
-
+        
         // Agregar el botón al contenedor
         buttonContainer.appendChild(showHiddenRowsButton);
-
+        
         // Agregar el contenedor al div de contenido
         document.getElementById("content").appendChild(buttonContainer);
     };
@@ -145,9 +160,9 @@ function filterTable(searchText) {
     // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
     for (let index = 0; index < rows.length; index++) {
         const row = rows[index];
-        if (index === 0) {
+        if (index === 1) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 94) {
+        } else if (index < 102) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -162,7 +177,7 @@ function filterTable(searchText) {
                 row.style.display = "none"; // Ocultar la fila si no coincide con el texto de búsqueda
             }
         } else {
-            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
+            row.style.display = "none"; // Ocultar las filas desde la fila 102 hacia abajo
         }
     }
 
@@ -189,48 +204,9 @@ const filterOptions = {
     "Tomos totales": ["En publicación", "Finalizado"]
 };
 
-// Función para filtrar las tablas
-function filterTable(searchText) {
-    // Obtener todas las filas de la tabla
-    const rows = document.querySelectorAll("#preview table tr");
-    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
-
-    // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
-    for (let index = 0; index < rows.length; index++) {
-        const row = rows[index];
-        if (index === 0) {
-            row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 94) {
-            const cells = row.querySelectorAll("td");
-            let rowMatch = false;
-            cells.forEach(function (cell) {
-                if (cell.textContent.toLowerCase().includes(searchText)) {
-                    rowMatch = true;
-                    anyRowMatch = true; // Al menos una fila coincide con el filtro
-                }
-            });
-            if (rowMatch) {
-                row.style.display = ""; // Mostrar la fila si coincide con el texto de búsqueda
-            } else {
-                row.style.display = "none"; // Ocultar la fila si no coincide con el texto de búsqueda
-            }
-        } else {
-            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
-        }
-    }
-
-    // Mostrar u ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
-    const noResultsMessage = document.getElementById("noResultsMessage");
-    if (!anyRowMatch) {
-        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con el filtro
-    } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
-    }
-}
-
 // Función para aplicar los filtros seleccionados
 function applyFilters() {
-    const searchText = document.getElementById("searchInput").value.toLowerCase();
+    const searchText = searchInput.value.toLowerCase();
     const selectedFilters = getSelectedFilters();
 
     // Obtener todas las filas de la tabla
@@ -337,9 +313,19 @@ searchInput.addEventListener("input", function () {
 
 // Descargar el Excel con el boton de "descarga"
 function downloadExcel() {
-    // Función para descargar el archivo Excel
-    const excelFilePath = './assets/Mangas.xlsx';
-    window.location.href = excelFilePath;
+    // URL del archivo Excel
+    const excelFilePath = 'https://docs.google.com/spreadsheets/d/1sstxQxFDH-a0zpk5EX1-kzvHId41LcBXtn5M4Kz4-is/export?format=xlsx&id=1sstxQxFDH-a0zpk5EX1-kzvHId41LcBXtn5M4Kz4-is';
+
+    // Crear un elemento <a> para descargar el archivo
+    const downloadLink = document.createElement("a");
+    downloadLink.href = excelFilePath;
+
+    // Establecer atributos para la descarga
+    downloadLink.download = 'Mangas.xlsx';
+    downloadLink.target = '_blank';
+
+    // Simular un clic en el enlace para iniciar la descarga
+    downloadLink.click();
 }
 
 // Botón de descuento
@@ -366,8 +352,8 @@ function initializeOrRefreshValues() {
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
             // Considerar todas las filas excepto las que no deben modificarse (por ejemplo, títulos, encabezados, etc.)
-            if (index !== 0 && index !== 100) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
-                const cell = row.querySelector("td:nth-child(7)");
+            if (index !== 0 && index !== 1 && index !== 101) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
+                const cell = row.querySelector("td:nth-child(8)");
                 const cellValue = parseFloat(cell.textContent.replace(/[^0-9.-]+/g, ""));
                 if (!isNaN(cellValue)) {
                     originalValues[index] = cell.textContent; // Guardar el valor original
@@ -386,8 +372,8 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 100) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
-            const cell = row.querySelector("td:nth-child(7)");
+        if (index !== 0 && index !== 1 && index !== 101) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
+            const cell = row.querySelector("td:nth-child(8)");
             if (discountApplied) {
                 // Restaurar valor original
                 cell.textContent = originalValues[index];
@@ -411,9 +397,9 @@ function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
         // Ignorar las filas con índice 1 y 100
-        if (index === 0 || index === 101) return;
+        if (index !== 0 && index !== 1 && index !== 102) return;
         
-        const cell = row.querySelector("td:nth-child(7)");
+        const cell = row.querySelector("td:nth-child(8)");
         cell.textContent = saleValues[index - 1];
     });
 }
@@ -428,128 +414,162 @@ function applyStylesToTable() {
         const rowCount = document.querySelector("#preview table tr").cells.length;
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
+        if (columnIndex <= 11) {
+            if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 101) {
+                cell.style.backgroundColor = "#A5A5A5";
+                cell.style.color = "#ffffff";
+            } else if (columnIndex === 5 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 101) {
+                cell.style.backgroundColor = "#F2F2F2";
+                cell.style.color = "#ff6f00";
+            } else if (columnIndex === 11 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 101) {
+                cell.style.backgroundColor = "#95DFDB";
+            } else {
+                const cellContent = cell.textContent.trim().toLowerCase();
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
-            cell.style.backgroundColor = "#A5A5A5";
-            cell.style.color = "#ffffff";
-        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
-            cell.style.backgroundColor = "#F2F2F2";
-            cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
-            cell.style.backgroundColor = "#95DFDB";
-        } else {
-            const cellContent = cell.textContent.trim().toLowerCase();
+                // Estados
 
-            // Estados
+                if (cellContent.toLowerCase().includes("en curso")) {
+                    cell.style.backgroundColor = "#FFCC99";
+                } else if (cellContent.toLowerCase().includes("completado")) {
+                    cell.style.backgroundColor = "#C6EFCE";
+                } else if (cellContent.toLowerCase().includes("droppeado")) {
+                    cell.style.backgroundColor = "#FFC7CE";
+                } else if (cellContent.toLowerCase().includes("tomo único")) {
+                    cell.style.backgroundColor = "#FFEB9C";
+                }
 
-            if (cellContent.toLowerCase().includes("en curso")) {
-                cell.style.backgroundColor = "#FFCC99";
-            } else if (cellContent.toLowerCase().includes("completado")) {
-                cell.style.backgroundColor = "#C6EFCE";
-            } else if (cellContent.toLowerCase().includes("droppeado")) {
-                cell.style.backgroundColor = "#FFC7CE";
-            } else if (cellContent.toLowerCase().includes("tomo único")) {
-                cell.style.backgroundColor = "#FFEB9C";
+                // Editoriales
+
+                else if (cellContent.toLowerCase().includes("ivrea")) {
+                    cell.style.backgroundColor = "#FF33CC";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("panini")) {
+                    cell.style.backgroundColor = "#70AD47";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("kemuri")) {
+                    cell.style.backgroundColor = "#FF9966";
+                } else if (cellContent.toLowerCase().includes("distrito manga")) {
+                    cell.style.backgroundColor = "#8FAADC";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("ovni press")) {
+                    cell.style.backgroundColor = "#7030A0";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("planeta cómic")) {
+                    cell.style.backgroundColor = "#3333CC";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("utopia")) {
+                    cell.style.backgroundColor = "#0099CC";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("merci")) {
+                    cell.style.backgroundColor = "#333300";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("milky way")) {
+                    cell.style.backgroundColor = "#003366";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("moztros")) {
+                    cell.style.backgroundColor = "#FF0000";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("random comics")) {
+                    cell.style.backgroundColor = "#ff99ff";
+                    cell.style.color = "#000000";
+                }
+
+                // Tamaño
+
+                if (cellContent.includes("a5 color")) {
+                    cell.style.backgroundColor = "#FF5050";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.includes("a5")) {
+                    cell.style.backgroundColor = "#FF0066";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.includes("c6x2")) {
+                    cell.style.backgroundColor = "#FFD966";
+                } else if (cellContent.includes("b6x2")) {
+                    cell.style.backgroundColor = "#A9D18E";
+                } else if (cellContent.includes("c6")) {
+                    cell.style.backgroundColor = "#FFE699";
+                } else if (cellContent.includes("b6")) {
+                    cell.style.backgroundColor = "#0EAE02";
+                }
+
+                // Tomos totales
+
+                if (cellContent.toLowerCase().includes("en publicacion")) {
+                    cell.style.backgroundColor = "#4472C4";
+                    cell.style.color = "#ffffff";
+                } else if (cellContent.toLowerCase().includes("finalizado")) {
+                    cell.style.backgroundColor = "#E7E6E6";
+                }
             }
 
-            // Editoriales
-
-            else if (cellContent.toLowerCase().includes("ivrea")) {
-                cell.style.backgroundColor = "#FF33CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("panini")) {
-                cell.style.backgroundColor = "#70AD47";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("kemuri")) {
-                cell.style.backgroundColor = "#FF9966";
-            } else if (cellContent.toLowerCase().includes("distrito manga")) {
-                cell.style.backgroundColor = "#8FAADC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("ovni press")) {
+            // Aplicar estilos a la fila 1
+            if (rowIndex === 1) {
                 cell.style.backgroundColor = "#7030A0";
                 cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("planeta cómic")) {
-                cell.style.backgroundColor = "#3333CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("utopia")) {
-                cell.style.backgroundColor = "#0099CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("merci")) {
-                cell.style.backgroundColor = "#333300";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("milky way")) {
-                cell.style.backgroundColor = "#003366";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("moztros")) {
-                cell.style.backgroundColor = "#FF0000";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("random comics")) {
-                cell.style.backgroundColor = "#ff99ff";
-                cell.style.color = "#000000";
             }
 
-            // Tamaño
-
-            if (cellContent.includes("a5 color")) {
-                cell.style.backgroundColor = "#FF5050";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.includes("a5")) {
-                cell.style.backgroundColor = "#FF0066";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.includes("c6x2")) {
-                cell.style.backgroundColor = "#FFD966";
-            } else if (cellContent.includes("b6x2")) {
-                cell.style.backgroundColor = "#A9D18E";
-            } else if (cellContent.includes("c6")) {
-                cell.style.backgroundColor = "#FFE699";
-            } else if (cellContent.includes("b6")) {
-                cell.style.backgroundColor = "#0EAE02";
+            if (columnIndex === 0) {
+                cell.style.backgroundColor = "#fff";
+                cell.style.color = "#000";
             }
 
-            // Tomos totales
-
-            if (cellContent.toLowerCase().includes("en publicacion")) {
-                cell.style.backgroundColor = "#4472C4";
+            // Aplicar estilos a la fila 101 (excluir columna 11)
+            if (rowIndex === 101 && columnIndex <= 9) {
+                cell.style.backgroundColor = "#7030A0";
                 cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("finalizado")) {
-                cell.style.backgroundColor = "#E7E6E6";
             }
-        }
-
-        // Aplicar estilos a la fila 0
-        if (rowIndex === 0) {
-            cell.style.backgroundColor = "#7030A0";
-            cell.style.color = "#ffffff";
-        }
-
-        // Aplicar estilos a la fila 100 (excluir columna 11)
-        if (rowIndex === 100 && columnIndex <= 9) {
-            cell.style.backgroundColor = "#7030A0";
-            cell.style.color = "#ffffff";
+        } else {
+            // Ocultar las celdas que están en las columnas 12 en adelante
+            cell.style.display = "none";
         }
     });
 }
 
 // Función para ocultar las filas desde la 95 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
-    hiddenRows.forEach(row => {
-        row.style.display = "none";
+    const rows = document.querySelectorAll("#preview table tr");
+    rows.forEach((row, index) => {
+        if (index >= 102) {
+            row.style.display = "none";
+        } else if (row.style.display !== "none" && index !== 0) { // Ocultar filas que no coinciden con el filtro de búsqueda
+            const cells = row.querySelectorAll("td");
+            let rowMatch = false;
+            cells.forEach(function (cell) {
+                if (cell.textContent.toLowerCase().includes(searchInput.value.toLowerCase())) {
+                    rowMatch = true;
+                }
+            });
+            if (!rowMatch) {
+                row.style.display = "none";
+            }
+        }
     });
 }
 
-// Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
+// Función para mostrar las tablas ocultas en la función de mostrar estadísticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
-    const button = document.getElementById("showHiddenRowsButton");
-
-    if (button.dataset.clicked === "true") {
-        hiddenRows.forEach(row => {
-            row.style.display = "table-row";
-        });
-    } else {
-        hiddenRows.forEach(row => {
-            row.style.display = "none";
-        });
-    }
+    const rows = document.querySelectorAll("#preview table tr");
+    rows.forEach((row, index) => {
+        if (index >= 102) {
+            const button = document.getElementById("showHiddenRowsButton");
+            if (button.dataset.clicked === "true") {
+                row.style.display = "table-row";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    });
 }
+
+// Función para mostrar o no las estadísticas al final de la página
+const showHiddenRowsButton = document.getElementById("showHiddenRowsButton");
+showHiddenRowsButton.addEventListener("click", function () {
+    if (this.dataset.clicked === "true") {
+        this.dataset.clicked = "false";
+        this.textContent = "Mostrar Estadisticas";
+    } else {
+        this.dataset.clicked = "true";
+        this.textContent = "Ocultar Estadisticas";
+    }
+    showHiddenRows();
+});
