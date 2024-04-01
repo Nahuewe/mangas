@@ -47,7 +47,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 95 hacia abajo al cargar la página
+        // Ocultar las filas desde la 101 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -86,6 +86,14 @@ function previewExcel(filePath) {
 
     req.send();
 }
+
+// Opciones del filtro
+const filterOptions = {
+    "Estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
+    "Editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros", "Random Comics"],
+    "Tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
+    "Tomos totales": ["En publicación", "Finalizado"]
+};
 
 // Función para llenar el selector de filtro con las opciones de filtro
 function fillFilterSelect() {
@@ -136,59 +144,6 @@ function clearFilterSelect() {
     filterSelect.selectedIndex = 0;
 }
 
-// Funcion para filtrar las tablas
-function filterTable(searchText) {
-    // Obtener todas las filas de la tabla
-    const rows = document.querySelectorAll("#preview table tr");
-    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
-
-    // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
-    for (let index = 0; index < rows.length; index++) {
-        const row = rows[index];
-        if (index === 0) {
-            row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 95) {
-            const cells = row.querySelectorAll("td");
-            let rowMatch = false;
-            cells.forEach(function (cell) {
-                if (cell.textContent.toLowerCase().includes(searchText)) {
-                    rowMatch = true;
-                    anyRowMatch = true; // Al menos una fila coincide con el filtro
-                }
-            });
-            if (rowMatch) {
-                row.style.display = ""; // Mostrar la fila si coincide con el texto de búsqueda
-            } else {
-                row.style.display = "none"; // Ocultar la fila si no coincide con el texto de búsqueda
-            }
-        } else {
-            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
-        }
-    }
-
-    // Mostrar o ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
-    const noResultsMessage = document.getElementById("noResultsMessage");
-    const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
-    const showHiddenRowsButtonContainer = document.getElementById("showHiddenRowsButtonContainer");
-    if (!anyRowMatch) {
-        noResultsMessage.style.display = ""; // Mostrar el mensaje si no hay filas que coincidan con el filtro
-        noResultsMessageFilter.style.display = "none";
-        showHiddenRowsButtonContainer.style.display = "none";
-    } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
-        noResultsMessageFilter.style.display = "none";
-        showHiddenRowsButtonContainer.style.display = "none";
-    }
-}
-
-// Opciones del filtro
-const filterOptions = {
-    "Estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
-    "Editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros", "Random Comics"],
-    "Tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
-    "Tomos totales": ["En publicación", "Finalizado"]
-};
-
 // Función para filtrar las tablas
 function filterTable(searchText) {
     // Obtener todas las filas de la tabla
@@ -200,7 +155,7 @@ function filterTable(searchText) {
         const row = rows[index];
         if (index === 0) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 95) {
+        } else if (index < 101) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -259,12 +214,12 @@ function applyFilters() {
     });
 
     // Mostrar u ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
-    const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
-    if (!anyRowMatch) {
-        noResultsMessageFilter.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
-    } else {
-        noResultsMessageFilter.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
-    }
+    // const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
+    // if (!anyRowMatch) {
+    //     noResultsMessageFilter.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
+    // } else {
+    //     noResultsMessageFilter.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
+    // }
 }
 
 // Función para obtener los filtros seleccionados
@@ -304,13 +259,13 @@ function filtersMatch(selectedFilters, cellIndex, cellContent) {
 function getFilterIndex(filter) {
     switch (filter) {
         case "Estado":
-            return 4; // Índice de la columna de Estado
+            return 1; // Índice de la columna de Estado
         case "Editorial":
-            return 5; // Índice de la columna de Editorial
+            return 2; // Índice de la columna de Editorial
         case "Tamaño":
             return 6; // Índice de la columna de Tamaño
         case "Tomos totales":
-            return 10; // Índice de la columna de Tomos Totales
+            return 8; // Índice de la columna de Tomos Totales
         default:
             return -1; // Valor por defecto para manejar filtros no válidos
     }
@@ -351,58 +306,63 @@ discountButton.addEventListener("click", function () {
     toggleDiscount();
 });
 
-// Variables para almacenar los valores originales y con descuento
-let originalValues = [];
-let discountedValues = [];
+let originalValues = []; // Este array almacenará objetos { cell5: valor, cell7: valor }
+let discountedValues = []; // Similar a originalValues, para los valores con descuento
+let discountApplied = false; // Para controlar el estado del descuento
 
-// Flag para verificar si el descuento ya ha sido aplicado
-let discountApplied = false;
-
-// Función para inicializar o actualizar los valores originales y con descuento
 function initializeOrRefreshValues() {
     const rows = document.querySelectorAll("#preview table tr");
-    
-    // Inicializar o refrescar solo si es necesario (la primera vez o si el array está vacío)
+
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
-            // Considerar todas las filas excepto las que no deben modificarse (por ejemplo, títulos, encabezados, etc.)
-            if (index !== 0 && index !== 101) { // Asumiendo que la fila 0 y 101 no deben ser modificadas
-                const cell = row.querySelector("td:nth-child(7)");
-                const cellValue = parseFloat(cell.textContent.replace(/[^0-9.-]+/g, ""));
-                if (!isNaN(cellValue)) {
-                    originalValues[index] = cell.textContent; // Guardar el valor original
-                    const discountValue = Math.round(cellValue * 0.6 * 100) / 100; // Descuento del 40%
-                    discountedValues[index] = "$ " + discountValue.toString(); // Guardar el valor con descuento
-                }
+            if (index !== 0 && index !== 101) { // Excluyendo filas específicas
+                // Para el quinto hijo
+                const cell5 = row.querySelector("td:nth-child(5)");
+                const value5 = parseFloat(cell5.textContent.replace(/[^0-9.-]+/g, ""));
+                // Para el séptimo hijo
+                const cell7 = row.querySelector("td:nth-child(7)");
+                const value7 = parseFloat(cell7.textContent.replace(/[^0-9.-]+/g, ""));
+
+                originalValues[index] = { cell5: cell5.textContent, cell7: cell7.textContent }; // Guardar valores originales
+
+                // Calculando descuentos
+                const discountValue5 = !isNaN(value5) ? "$ " + Math.round(value5 * 0.8 * 100) / 100 : cell5.textContent;
+                const discountValue7 = !isNaN(value7) ? "$ " + Math.round(value7 * 0.6 * 100) / 100 : cell7.textContent;
+
+                discountedValues[index] = { cell5: discountValue5, cell7: discountValue7 }; // Guardar valores con descuento
             }
         });
     }
 }
 
-// Función para alternar entre mostrar precios con descuento y precios originales
 function toggleDiscount() {
-    initializeOrRefreshValues(); // Asegurarse de que los valores están inicializados
+    initializeOrRefreshValues();
 
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 101) { // Asumiendo que la fila 0 y 101 no deben ser modificadas
-            const cell = row.querySelector("td:nth-child(7)");
+        if (index !== 0 && index !== 101) {
+            // Aplicando o quitando el descuento para el quinto y séptimo hijo
+            const cell5 = row.querySelector("td:nth-child(5)");
+            const cell7 = row.querySelector("td:nth-child(7)");
+
             if (discountApplied) {
-                // Restaurar valor original
-                cell.textContent = originalValues[index];
-                cell.classList.remove("rainbow-text");
+                // Restaurar valores originales
+                cell5.textContent = originalValues[index].cell5;
+                cell7.textContent = originalValues[index].cell7;
+                cell5.classList.remove("rainbow-text-inverse");
+                cell7.classList.remove("rainbow-text");
             } else {
                 // Aplicar descuento
-                cell.textContent = discountedValues[index];
-                cell.classList.add("rainbow-text");
+                cell5.textContent = discountedValues[index].cell5;
+                cell7.textContent = discountedValues[index].cell7;
+                cell5.classList.add("rainbow-text-inverse");
+                cell7.classList.add("rainbow-text");
             }
         }
     });
 
-    // Toggle el estado del descuento
-    discountApplied = !discountApplied;
-    // Actualizar el texto del botón según el estado
+    discountApplied = !discountApplied; // Alternar estado del descuento
     discountButton.textContent = discountApplied ? "Precio de Lista" : "Precio de Venta";
 }
 
@@ -412,7 +372,7 @@ function showSaleValues() {
     rows.forEach(function (row, index) {
         // Ignorar las filas con índice 1 y 101
         if (index === 0 || index === 102) return;
-        
+
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
     });
@@ -432,9 +392,12 @@ function applyStylesToTable() {
         if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
-        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
-            cell.style.backgroundColor = "#F2F2F2";
-            cell.style.color = "#ff6f00";
+            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+            //     cell.style.backgroundColor = "#F2F2F2";
+            //     cell.style.color = "#ff6f00";
+            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+            //     cell.style.backgroundColor = "#F2F2F2";
+            //     cell.style.color = "#ff6f00";
         } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
             cell.style.backgroundColor = "#95DFDB";
         } else {

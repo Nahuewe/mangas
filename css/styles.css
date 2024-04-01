@@ -259,7 +259,7 @@ th {
 }
 
 .rainbow-text {
-    background-image: linear-gradient(to left, violet, indigo, blue, red);
+    background-image: linear-gradient(to left, violet, indigo, blue, green, orange, red);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
