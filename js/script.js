@@ -147,7 +147,7 @@ function filterTable(searchText) {
         const row = rows[index];
         if (index === 0) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 94) {
+        } else if (index < 95) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -200,7 +200,7 @@ function filterTable(searchText) {
         const row = rows[index];
         if (index === 0) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 94) {
+        } else if (index < 95) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -366,7 +366,7 @@ function initializeOrRefreshValues() {
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
             // Considerar todas las filas excepto las que no deben modificarse (por ejemplo, títulos, encabezados, etc.)
-            if (index !== 0 && index !== 100) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
+            if (index !== 0 && index !== 101) { // Asumiendo que la fila 0 y 101 no deben ser modificadas
                 const cell = row.querySelector("td:nth-child(7)");
                 const cellValue = parseFloat(cell.textContent.replace(/[^0-9.-]+/g, ""));
                 if (!isNaN(cellValue)) {
@@ -386,7 +386,7 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 100) { // Asumiendo que la fila 0 y 100 no deben ser modificadas
+        if (index !== 0 && index !== 101) { // Asumiendo que la fila 0 y 101 no deben ser modificadas
             const cell = row.querySelector("td:nth-child(7)");
             if (discountApplied) {
                 // Restaurar valor original
@@ -410,8 +410,8 @@ function toggleDiscount() {
 function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
-        // Ignorar las filas con índice 1 y 100
-        if (index === 0 || index === 101) return;
+        // Ignorar las filas con índice 1 y 101
+        if (index === 0 || index === 102) return;
         
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
@@ -429,13 +429,13 @@ function applyStylesToTable() {
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
+        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
-        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
+        } else if (columnIndex === 4 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
             cell.style.backgroundColor = "#F2F2F2";
             cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 101 && rowIndex !== 100) {
+        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
             cell.style.backgroundColor = "#95DFDB";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
@@ -523,7 +523,7 @@ function applyStylesToTable() {
         }
 
         // Aplicar estilos a la fila 100 (excluir columna 11)
-        if (rowIndex === 100 && columnIndex <= 9) {
+        if (rowIndex === 101 && columnIndex <= 9) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         }
@@ -532,7 +532,7 @@ function applyStylesToTable() {
 
 // Función para ocultar las filas desde la 95 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+102)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -540,7 +540,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+101)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+102)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
