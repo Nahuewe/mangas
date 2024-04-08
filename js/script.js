@@ -490,6 +490,14 @@ function applyStylesToTable() {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         }
+
+        if (rowIndex === 102 && columnIndex === 9) {
+            cell.style.backgroundColor = "#F2F2F2";
+        }
+
+        if (rowIndex === 102 && columnIndex === 2) {
+            cell.style.backgroundColor = "#F2F2F2";
+        }
     });
 }
 
