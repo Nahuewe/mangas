@@ -47,7 +47,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 101 hacia abajo al cargar la página
+        // Ocultar las filas desde la 109 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -155,7 +155,7 @@ function filterTable(searchText) {
         const row = rows[index];
         if (index === 0) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 101) {
+        } else if (index < 109) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -315,7 +315,7 @@ function initializeOrRefreshValues() {
 
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
-            if (index !== 0 && index !== 101) { // Excluyendo filas específicas
+            if (index !== 0 && index !== 109) { // Excluyendo filas específicas
                 // Para el quinto hijo
                 const cell5 = row.querySelector("td:nth-child(5)");
                 const value5 = parseFloat(cell5.textContent.replace(/[^0-9.-]+/g, ""));
@@ -341,7 +341,7 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 101) {
+        if (index !== 0 && index !== 109) {
             // Aplicando o quitando el descuento para el quinto y séptimo hijo
             const cell5 = row.querySelector("td:nth-child(5)");
             const cell7 = row.querySelector("td:nth-child(7)");
@@ -370,8 +370,8 @@ function toggleDiscount() {
 function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
-        // Ignorar las filas con índice 1 y 101
-        if (index === 0 || index === 102) return;
+        // Ignorar las filas con índice 1 y 110
+        if (index === 0 || index === 110) return;
 
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
@@ -389,16 +389,16 @@ function applyStylesToTable() {
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 110 && rowIndex !== 109) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
-            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 110 && rowIndex !== 109) {
             //     cell.style.backgroundColor = "#F2F2F2";
             //     cell.style.color = "#ff6f00";
-            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 110 && rowIndex !== 109) {
             //     cell.style.backgroundColor = "#F2F2F2";
             //     cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 102 && rowIndex !== 101) {
+        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 110 && rowIndex !== 109) {
             cell.style.backgroundColor = "#95DFDB";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
@@ -486,24 +486,24 @@ function applyStylesToTable() {
         }
 
         // Aplicar estilos a la fila 100 (excluir columna 11)
-        if (rowIndex === 101 && columnIndex <= 9) {
+        if (rowIndex === 109 && columnIndex <= 9) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         }
 
-        if (rowIndex === 102 && columnIndex === 9) {
+        if (rowIndex === 110 && columnIndex === 9) {
             cell.style.backgroundColor = "#F2F2F2";
         }
 
-        if (rowIndex === 102 && columnIndex === 2) {
+        if (rowIndex === 110 && columnIndex === 2) {
             cell.style.backgroundColor = "#F2F2F2";
         }
     });
 }
 
-// Función para ocultar las filas desde la 95 hacia abajo
+// Función para ocultar las filas desde la 110 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+102)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+110)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -511,7 +511,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+102)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+110)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
