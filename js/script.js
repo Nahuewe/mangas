@@ -47,7 +47,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 113 hacia abajo al cargar la página
+        // Ocultar las filas desde la 117 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -90,7 +90,7 @@ function previewExcel(filePath) {
 // Opciones del filtro
 const filterOptions = {
     "Estado": ["En curso", "Completado", "Droppeado", "Tomo único"],
-    "Editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros", "Random Comics"],
+    "Editorial": ["Ivrea", "Panini", "Kemuri", "Distrito Manga", "Ovni Press", "Planeta Cómic", "Utopia", "Merci", "Milky Way", "Moztros", "Random Comics", "Hotel de las Ideas"],
     "Tamaño": ["A5 color", "A5", "C6x2", "B6x2", "C6", "B6"],
     "Tomos totales": ["En publicación", "Finalizado"]
 };
@@ -155,7 +155,7 @@ function filterTable(searchText) {
         const row = rows[index];
         if (index === 0) {
             row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 113) {
+        } else if (index < 117) {
             const cells = row.querySelectorAll("td");
             let rowMatch = false;
             cells.forEach(function (cell) {
@@ -190,22 +190,34 @@ function applyFilters() {
 
     // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll("#preview table tr");
-    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con los filtros
+    let anyRowMatch = false;
 
-    // Recorrer todas las filas y verificar si alguna coincide con los filtros seleccionados
-    rows.forEach(row => {
+    rows.forEach((row, index) => {
+        if (index === 0 || index >= 117) {
+            row.style.display = index === 0 ? "" : "none";
+            return;
+        }
+
         const cells = row.querySelectorAll("td");
-        let rowMatch = false;
+        let textMatch = false;
+        let filtersMatch = true;
 
-        cells.forEach((cell, cellIndex) => {
-            // Verificar si el texto de búsqueda coincide y si alguna de las opciones seleccionadas coincide con el contenido de la celda
-            if (cell.textContent.toLowerCase().includes(searchText) && selectedFilters.some(filter => filter.includes(cell.textContent.toLowerCase()))) {
-                rowMatch = true;
+        // Verificar coincidencia con el texto de búsqueda
+        cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(searchText)) {
+                textMatch = true;
             }
         });
 
-        // Mostrar u ocultar la fila según si coincide con los filtros
-        if (rowMatch) {
+        // Verificar coincidencia con los filtros seleccionados
+        selectedFilters.forEach(filterValue => {
+            if (!Array.from(cells).some(cell => cell.textContent.toLowerCase() === filterValue)) {
+                filtersMatch = false;
+            }
+        });
+
+        // Mostrar u ocultar la fila dependiendo de las coincidencias
+        if (textMatch && filtersMatch) {
             row.style.display = "";
             anyRowMatch = true;
         } else {
@@ -213,30 +225,16 @@ function applyFilters() {
         }
     });
 
-    // Mostrar u ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
-    // const noResultsMessageFilter = document.getElementById("noResultsMessageFilter");
-    // if (!anyRowMatch) {
-    //     noResultsMessageFilter.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con los filtros
-    // } else {
-    //     noResultsMessageFilter.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con los filtros
-    // }
+    // Mostrar u ocultar el mensaje de "No se encontraron resultados"
+    const noResultsMessage = document.getElementById("noResultsMessage");
+    noResultsMessage.style.display = anyRowMatch ? "none" : "block";
 }
+
 
 // Función para obtener los filtros seleccionados
 function getSelectedFilters() {
-    const selectedFilters = [];
     const filterSelect = document.getElementById("filterSelect");
-
-    // Iterar sobre las opciones seleccionadas dentro de filterSelect
-    for (let i = 0; i < filterSelect.options.length; i++) {
-        const select = filterSelect.options[i];
-        // Si la opción está seleccionada, agregar su valor al array selectedFilters
-        if (select.selected) {
-            selectedFilters.push(select.textContent.toLowerCase());
-        }
-    }
-
-    return selectedFilters;
+    return Array.from(filterSelect.selectedOptions).map(option => option.value.toLowerCase());
 }
 
 // Función para verificar si las opciones seleccionadas coinciden con el contenido de la celda
@@ -315,7 +313,7 @@ function initializeOrRefreshValues() {
 
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
-            if (index !== 0 && index !== 113) { // Excluyendo filas específicas
+            if (index !== 0 && index !== 117) { // Excluyendo filas específicas
                 // Para el quinto hijo
                 const cell5 = row.querySelector("td:nth-child(5)");
                 const value5 = parseFloat(cell5.textContent.replace(/[^0-9.-]+/g, ""));
@@ -341,7 +339,7 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 113) {
+        if (index !== 0 && index !== 117) {
             // Aplicando o quitando el descuento para el quinto y séptimo hijo
             const cell5 = row.querySelector("td:nth-child(5)");
             const cell7 = row.querySelector("td:nth-child(7)");
@@ -370,8 +368,8 @@ function toggleDiscount() {
 function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
-        // Ignorar las filas con índice 1 y 114
-        if (index === 0 || index === 114) return;
+        // Ignorar las filas con índice 1 y 118
+        if (index === 0 || index === 118) return;
 
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
@@ -389,16 +387,16 @@ function applyStylesToTable() {
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 114 && rowIndex !== 113) {
+        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
             cell.style.backgroundColor = "#A5A5A5";
             cell.style.color = "#ffffff";
-            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 114 && rowIndex !== 113) {
+            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
             //     cell.style.backgroundColor = "#F2F2F2";
             //     cell.style.color = "#ff6f00";
-            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 114 && rowIndex !== 113) {
+            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
             //     cell.style.backgroundColor = "#F2F2F2";
             //     cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 114 && rowIndex !== 113) {
+        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
             cell.style.backgroundColor = "#95DFDB";
         } else {
             const cellContent = cell.textContent.trim().toLowerCase();
@@ -449,6 +447,9 @@ function applyStylesToTable() {
             } else if (cellContent.toLowerCase().includes("random comics")) {
                 cell.style.backgroundColor = "#ff99ff";
                 cell.style.color = "#000000";
+            } else if (cellContent.toLowerCase().includes("hotel de las ideas")) {
+                cell.style.backgroundColor = "#f9c8de";
+                cell.style.color = "#000000";
             }
 
             // Tamaño
@@ -486,24 +487,24 @@ function applyStylesToTable() {
         }
 
         // Aplicar estilos a la fila 100 (excluir columna 11)
-        if (rowIndex === 113 && columnIndex <= 9) {
+        if (rowIndex === 117 && columnIndex <= 9) {
             cell.style.backgroundColor = "#7030A0";
             cell.style.color = "#ffffff";
         }
 
-        if (rowIndex === 114 && columnIndex === 9) {
+        if (rowIndex === 118 && columnIndex === 9) {
             cell.style.backgroundColor = "#F2F2F2";
         }
 
-        if (rowIndex === 114 && columnIndex === 2) {
+        if (rowIndex === 118 && columnIndex === 2) {
             cell.style.backgroundColor = "#F2F2F2";
         }
     });
 }
 
-// Función para ocultar las filas desde la 114 hacia abajo
+// Función para ocultar las filas desde la 118 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+114)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+118)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -511,7 +512,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+114)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+118)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
