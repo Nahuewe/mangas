@@ -472,7 +472,7 @@ function applyStylesToTable() {
 
             // Tomos totales
 
-            if (cellContent.toLowerCase().includes("en publicacion")) {
+            if (cellContent.toLowerCase().includes("en publicación")) {
                 cell.style.backgroundColor = "#4472C4";
                 cell.style.color = "#ffffff";
             } else if (cellContent.toLowerCase().includes("finalizado")) {
