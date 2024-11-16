@@ -63,7 +63,6 @@ const suggestions = [
     "Blue Lock: Episode Nagi",
     "Chainsaw Man",
     "Sakamoto Days",
-    "Aku no Hana",
     "Dandadan",
     "Gachiakuta",
     "Versus",
@@ -81,6 +80,7 @@ const suggestions = [
     "The Promised Neverland",
     "Your Lie in April",
     "Fire Punch",
+    "Aku no Hana",
     "El Pecado Original de Takopi",
     "The Goldeen Sheep",
     "Museum",
@@ -91,6 +91,7 @@ const suggestions = [
     "Madoka Magica: Rebelion",
     "Madoka Magica: The Different Story",
     "Madoka Magica: Homura's Revenge",
+    "Madoka Magica: Wraith Arc",
     "Boys Run The Riot",
     "Mientras Yubooh Duerme",
     "Quiero ser Asesinado por mi Alumna",
@@ -124,7 +125,6 @@ const suggestions = [
     "Twilight Outfocus",
     "Twilight Outfocus Overlap",
     "My Capricorn Friend",
-    "Goodbye Eri",
     "El Fin del Mundo y Antes del Amanecer",
     "Reigen Nivel 131 de Espiritismo",
     "Ella y su Gato",
@@ -133,6 +133,8 @@ const suggestions = [
     "Uzumaki",
     "Nijigahara Holograph",
     "La Chica a la Orilla del Mar",
+    "Spy's Wife",
+    "Goodbye Eri",
     "Look Back",
     "Tatsuki Fujimoto's Short Stories: 17-21",
     "Tatsuki Fujimoto's Short Stories: 22-26",
@@ -161,4 +163,4 @@ const suggestions = [
     "Me Acuesto con mi Amiga Casada",
     "Us",
     "Hot Paprika"
-];
+]

@@ -1,21 +1,19 @@
 // Distribucion de funciones: carga de la pagina | Visualizacion de la tabla con formato Excel | Filtro general | Boton de "filtros" | Boton de "descargar" | Estilos de la tabla | Mostrar o esconder las tablas de estadisticas.
 
 // Funcion que se ejecuta al cargar la pagina
-window.onload = function () {
-    const loadingOverlay = document.getElementById("loadingOverlay");
-    const content = document.getElementById("content");
-    setTimeout(function () {
-        loadingOverlay.style.display = "none";
-        content.style.display = "block";
-    }, 200);
-
-    // Path al archivo Excel
-    const excelFilePath = './assets/Mangas.xlsx';
-    previewExcel(excelFilePath);
-
-    // Llenar el selector de filtro con las opciones de filtro al cargar la página
+window.onload = () => {
+    toggleLoadingOverlay(false);
+    previewExcel('./assets/Mangas.xlsx');
     fillFilterSelect();
 };
+
+// Función para mostrar u ocultar el overlay de carga
+function toggleLoadingOverlay(isVisible) {
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const content = document.getElementById("content");
+    loadingOverlay.style.display = isVisible ? "block" : "none";
+    content.style.display = isVisible ? "none" : "block";
+}
 
 // Funcion donde se edita todo lo que se visualiza dentro de las tablas
 function previewExcel(filePath) {
@@ -24,7 +22,7 @@ function previewExcel(filePath) {
     req.open("GET", filePath, true);
     req.responseType = "arraybuffer";
 
-    req.onload = function (e) {
+    req.onload = function () {
         const data = new Uint8Array(req.response);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
@@ -47,7 +45,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 117 hacia abajo al cargar la página
+        // Ocultar las filas desde la 119 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -146,92 +144,63 @@ function clearFilterSelect() {
 
 // Función para filtrar las tablas
 function filterTable(searchText) {
-    // Obtener todas las filas de la tabla
     const rows = document.querySelectorAll("#preview table tr");
-    let anyRowMatch = false; // Variable para controlar si alguna fila coincide con el filtro
-
-    // Recorrer todas las filas y ocultar aquellas que no coincidan con el texto de búsqueda
-    for (let index = 0; index < rows.length; index++) {
-        const row = rows[index];
-        if (index === 0) {
-            row.style.display = ""; // Mostrar la fila de encabezado
-        } else if (index < 117) {
-            const cells = row.querySelectorAll("td");
-            let rowMatch = false;
-            cells.forEach(function (cell) {
-                if (cell.textContent.toLowerCase().includes(searchText)) {
-                    rowMatch = true;
-                    anyRowMatch = true; // Al menos una fila coincide con el filtro
-                }
-            });
-            if (rowMatch) {
-                row.style.display = ""; // Mostrar la fila si coincide con el texto de búsqueda
-            } else {
-                row.style.display = "none"; // Ocultar la fila si no coincide con el texto de búsqueda
-            }
-        } else {
-            row.style.display = "none"; // Ocultar las filas desde la fila 95 hacia abajo
-        }
-    }
-
-    // Mostrar u ocultar el mensaje de "No se encontraron resultados" según la variable anyRowMatch
     const noResultsMessage = document.getElementById("noResultsMessage");
-    if (!anyRowMatch) {
-        noResultsMessage.style.display = "block"; // Mostrar el mensaje si no hay filas que coincidan con el filtro
-    } else {
-        noResultsMessage.style.display = "none"; // Ocultar el mensaje si hay filas que coinciden con el filtro
-    }
-}
-
-// Función para aplicar los filtros seleccionados
-function applyFilters() {
-    const searchText = document.getElementById("searchInput").value.toLowerCase();
-    const selectedFilters = getSelectedFilters();
-
-    // Obtener todas las filas de la tabla
-    const rows = document.querySelectorAll("#preview table tr");
     let anyRowMatch = false;
 
     rows.forEach((row, index) => {
-        if (index === 0 || index >= 117) {
+        if (index === 0) {
+            // Mostrar siempre el encabezado
+            row.style.display = "";
+            return;
+        }
+
+        if (index >= 119) {
+            // Ocultar filas desde la 119
+            row.style.display = "none";
+            return;
+        }
+
+        const cells = Array.from(row.querySelectorAll("td"));
+        const rowMatch = cells.some(cell => cell.textContent.toLowerCase().includes(searchText));
+
+        row.style.display = rowMatch ? "" : "none";
+        if (rowMatch) anyRowMatch = true;
+    });
+
+    // Mostrar u ocultar el mensaje de "No se encontraron resultados"
+    noResultsMessage.style.display = anyRowMatch ? "none" : "block";
+}
+
+function applyFilters() {
+    const searchText = document.getElementById("searchInput").value.toLowerCase();
+    const selectedFilters = getSelectedFilters();
+    const rows = document.querySelectorAll("#preview table tr");
+    const noResultsMessage = document.getElementById("noResultsMessage");
+    let anyRowMatch = false;
+
+    rows.forEach((row, index) => {
+        if (index === 0 || index >= 119) {
+            // Mostrar encabezado y ocultar filas desde la 119
             row.style.display = index === 0 ? "" : "none";
             return;
         }
 
-        const cells = row.querySelectorAll("td");
-        let textMatch = false;
-        let filtersMatch = true;
+        const cells = Array.from(row.querySelectorAll("td"));
+        const textMatch = cells.some(cell => cell.textContent.toLowerCase().includes(searchText));
+        const filtersMatch = selectedFilters.every(filter =>
+            cells.some(cell => cell.textContent.toLowerCase() === filter)
+        );
 
-        // Verificar coincidencia con el texto de búsqueda
-        cells.forEach(cell => {
-            if (cell.textContent.toLowerCase().includes(searchText)) {
-                textMatch = true;
-            }
-        });
-
-        // Verificar coincidencia con los filtros seleccionados
-        selectedFilters.forEach(filterValue => {
-            if (!Array.from(cells).some(cell => cell.textContent.toLowerCase() === filterValue)) {
-                filtersMatch = false;
-            }
-        });
-
-        // Mostrar u ocultar la fila dependiendo de las coincidencias
-        if (textMatch && filtersMatch) {
-            row.style.display = "";
-            anyRowMatch = true;
-        } else {
-            row.style.display = "none";
-        }
+        const rowMatch = textMatch && filtersMatch;
+        row.style.display = rowMatch ? "" : "none";
+        if (rowMatch) anyRowMatch = true;
     });
 
     // Mostrar u ocultar el mensaje de "No se encontraron resultados"
-    const noResultsMessage = document.getElementById("noResultsMessage");
     noResultsMessage.style.display = anyRowMatch ? "none" : "block";
 }
 
-
-// Función para obtener los filtros seleccionados
 function getSelectedFilters() {
     const filterSelect = document.getElementById("filterSelect");
     return Array.from(filterSelect.selectedOptions).map(option => option.value.toLowerCase());
@@ -313,7 +282,7 @@ function initializeOrRefreshValues() {
 
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
-            if (index !== 0 && index !== 117) { // Excluyendo filas específicas
+            if (index !== 0 && index !== 119) { // Excluyendo filas específicas
                 // Para el quinto hijo
                 const cell5 = row.querySelector("td:nth-child(5)");
                 const value5 = parseFloat(cell5.textContent.replace(/[^0-9.-]+/g, ""));
@@ -339,7 +308,7 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 117) {
+        if (index !== 0 && index !== 119) {
             // Aplicando o quitando el descuento para el quinto y séptimo hijo
             const cell5 = row.querySelector("td:nth-child(5)");
             const cell7 = row.querySelector("td:nth-child(7)");
@@ -368,8 +337,8 @@ function toggleDiscount() {
 function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
-        // Ignorar las filas con índice 1 y 118
-        if (index === 0 || index === 118) return;
+        // Ignorar las filas con índice 1 y 120
+        if (index === 0 || index === 120) return;
 
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
@@ -379,132 +348,84 @@ function showSaleValues() {
 // Funcion para aplicar todos los estilos a la tabla
 function applyStylesToTable() {
     // Obtener todas las celdas de la tabla
-    const cells = document.querySelectorAll("#preview table td");
+    const table = document.querySelector("#preview table");
+    const cells = table.querySelectorAll("td");
+    const rowCount = table.rows[0]?.cells.length || 0;
 
-    // Iterar sobre cada celda y aplicar los estilos según su contenido
-    cells.forEach(function (cell, index) {
-        const rowCount = document.querySelector("#preview table tr").cells.length;
+    // Mapas de valores a estilos
+    const contentStyles = {
+        estados: {
+            "en curso": { backgroundColor: "#FFCC99" },
+            completado: { backgroundColor: "#C6EFCE" },
+            droppeado: { backgroundColor: "#FFC7CE" },
+            "tomo único": { backgroundColor: "#FFEB9C" },
+        },
+        editoriales: {
+            ivrea: { backgroundColor: "#FF33CC", color: "#ffffff" },
+            panini: { backgroundColor: "#70AD47", color: "#ffffff" },
+            kemuri: { backgroundColor: "#FF9966" },
+            "distrito manga": { backgroundColor: "#8FAADC", color: "#ffffff" },
+            "ovni press": { backgroundColor: "#7030A0", color: "#ffffff" },
+            "planeta cómic": { backgroundColor: "#3333CC", color: "#ffffff" },
+            utopia: { backgroundColor: "#0099CC", color: "#ffffff" },
+            merci: { backgroundColor: "#333300", color: "#ffffff" },
+            "milky way": { backgroundColor: "#003366", color: "#ffffff" },
+            moztros: { backgroundColor: "#FF0000", color: "#ffffff" },
+            "random comics": { backgroundColor: "#ff99ff", color: "#000000" },
+            "hotel de las ideas": { backgroundColor: "#f9c8de", color: "#000000" },
+        },
+        tamaños: {
+            a5: { backgroundColor: "#FF0066", color: "#ffffff" },
+            c6x2: { backgroundColor: "#FFD966" },
+            b6x2: { backgroundColor: "#A9D18E" },
+            c6: { backgroundColor: "#FFE699" },
+            b6: { backgroundColor: "#0EAE02" },
+            "a5 color": { backgroundColor: "#FF5050", color: "#ffffff" },
+        },
+        tomos: {
+            "en publicación": { backgroundColor: "#4472C4", color: "#ffffff" },
+            finalizado: { backgroundColor: "#E7E6E6" },
+        },
+    };
+
+    // Función auxiliar para aplicar estilos
+    function applyStyle(cell, style) {
+        Object.assign(cell.style, style);
+    }
+
+    // Iterar sobre las celdas
+    cells.forEach((cell, index) => {
         const columnIndex = index % rowCount;
         const rowIndex = Math.floor(index / rowCount);
+        const cellContent = cell.textContent.trim().toLowerCase();
 
-        if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
-            cell.style.backgroundColor = "#A5A5A5";
-            cell.style.color = "#ffffff";
-            // } else if (columnIndex === 8 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
-            //     cell.style.backgroundColor = "#F2F2F2";
-            //     cell.style.color = "#ff6f00";
-            // } else if (columnIndex === 9 && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
-            //     cell.style.backgroundColor = "#F2F2F2";
-            //     cell.style.color = "#ff6f00";
-        } else if (columnIndex === 10 && cell.textContent.trim() !== "" && rowIndex >= 1 && rowIndex <= 118 && rowIndex !== 117) {
-            cell.style.backgroundColor = "#95DFDB";
-        } else {
-            const cellContent = cell.textContent.trim().toLowerCase();
-
-            // Estados
-
-            if (cellContent.toLowerCase().includes("en curso")) {
-                cell.style.backgroundColor = "#FFCC99";
-            } else if (cellContent.toLowerCase().includes("completado")) {
-                cell.style.backgroundColor = "#C6EFCE";
-            } else if (cellContent.toLowerCase().includes("droppeado")) {
-                cell.style.backgroundColor = "#FFC7CE";
-            } else if (cellContent.toLowerCase().includes("tomo único")) {
-                cell.style.backgroundColor = "#FFEB9C";
-            }
-
-            // Editoriales
-
-            else if (cellContent.toLowerCase().includes("ivrea")) {
-                cell.style.backgroundColor = "#FF33CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("panini")) {
-                cell.style.backgroundColor = "#70AD47";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("kemuri")) {
-                cell.style.backgroundColor = "#FF9966";
-            } else if (cellContent.toLowerCase().includes("distrito manga")) {
-                cell.style.backgroundColor = "#8FAADC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("ovni press")) {
-                cell.style.backgroundColor = "#7030A0";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("planeta cómic")) {
-                cell.style.backgroundColor = "#3333CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("utopia")) {
-                cell.style.backgroundColor = "#0099CC";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("merci")) {
-                cell.style.backgroundColor = "#333300";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("milky way")) {
-                cell.style.backgroundColor = "#003366";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("moztros")) {
-                cell.style.backgroundColor = "#FF0000";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("random comics")) {
-                cell.style.backgroundColor = "#ff99ff";
-                cell.style.color = "#000000";
-            } else if (cellContent.toLowerCase().includes("hotel de las ideas")) {
-                cell.style.backgroundColor = "#f9c8de";
-                cell.style.color = "#000000";
-            }
-
-            // Tamaño
-
-            if (cellContent.includes("a5 color")) {
-                cell.style.backgroundColor = "#FF5050";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.includes("a5")) {
-                cell.style.backgroundColor = "#FF0066";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.includes("c6x2")) {
-                cell.style.backgroundColor = "#FFD966";
-            } else if (cellContent.includes("b6x2")) {
-                cell.style.backgroundColor = "#A9D18E";
-            } else if (cellContent.includes("c6")) {
-                cell.style.backgroundColor = "#FFE699";
-            } else if (cellContent.includes("b6")) {
-                cell.style.backgroundColor = "#0EAE02";
-            }
-
-            // Tomos totales
-
-            if (cellContent.toLowerCase().includes("en publicación")) {
-                cell.style.backgroundColor = "#4472C4";
-                cell.style.color = "#ffffff";
-            } else if (cellContent.toLowerCase().includes("finalizado")) {
-                cell.style.backgroundColor = "#E7E6E6";
-            }
-        }
-
-        // Aplicar estilos a la fila 0
+        // Estilos especiales para posiciones específicas
         if (rowIndex === 0) {
-            cell.style.backgroundColor = "#7030A0";
-            cell.style.color = "#ffffff";
+            applyStyle(cell, { backgroundColor: "#7030A0", color: "#ffffff" });
+        } else if (rowIndex === 119 && columnIndex <= 9) {
+            applyStyle(cell, { backgroundColor: "#7030A0", color: "#ffffff" });
+        } else if (rowIndex === 120 && (columnIndex === 9 || columnIndex === 2)) {
+            applyStyle(cell, { backgroundColor: "#F2F2F2" });
+        } else if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 120 && rowIndex !== 119) {
+            applyStyle(cell, { backgroundColor: "#A5A5A5", color: "#ffffff" });
+        } else if (columnIndex === 10 && cellContent !== "" && rowIndex >= 1 && rowIndex <= 120 && rowIndex !== 119) {
+            applyStyle(cell, { backgroundColor: "#95DFDB" });
         }
 
-        // Aplicar estilos a la fila 100 (excluir columna 11)
-        if (rowIndex === 117 && columnIndex <= 9) {
-            cell.style.backgroundColor = "#7030A0";
-            cell.style.color = "#ffffff";
-        }
-
-        if (rowIndex === 118 && columnIndex === 9) {
-            cell.style.backgroundColor = "#F2F2F2";
-        }
-
-        if (rowIndex === 118 && columnIndex === 2) {
-            cell.style.backgroundColor = "#F2F2F2";
-        }
+        // Aplicar estilos según contenido
+        Object.entries(contentStyles).forEach(([, styles]) => {
+            Object.entries(styles).forEach(([key, style]) => {
+                if (cellContent.includes(key)) {
+                    applyStyle(cell, style);
+                }
+            });
+        });
     });
 }
 
-// Función para ocultar las filas desde la 118 hacia abajo
+// Función para ocultar las filas desde la 120 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+118)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+120)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -512,7 +433,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+118)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+120)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
