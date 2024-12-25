@@ -45,7 +45,7 @@ function previewExcel(filePath) {
         // Aplicar estilos adicionales a la tabla
         applyStylesToTable();
 
-        // Ocultar las filas desde la 120 hacia abajo al cargar la página
+        // Ocultar las filas desde la 121 hacia abajo al cargar la página
         hideHiddenRows();
 
         // Llenar el selector de filtro con las opciones de filtro al cargar la página
@@ -155,8 +155,8 @@ function filterTable(searchText) {
             return;
         }
 
-        if (index >= 120) {
-            // Ocultar filas desde la 120
+        if (index >= 121) {
+            // Ocultar filas desde la 121
             row.style.display = "none";
             return;
         }
@@ -180,8 +180,8 @@ function applyFilters() {
     let anyRowMatch = false;
 
     rows.forEach((row, index) => {
-        if (index === 0 || index >= 120) {
-            // Mostrar encabezado y ocultar filas desde la 120
+        if (index === 0 || index >= 121) {
+            // Mostrar encabezado y ocultar filas desde la 121
             row.style.display = index === 0 ? "" : "none";
             return;
         }
@@ -282,7 +282,7 @@ function initializeOrRefreshValues() {
 
     if (originalValues.length === 0 || discountedValues.length === 0) {
         rows.forEach((row, index) => {
-            if (index !== 0 && index !== 120) { // Excluyendo filas específicas
+            if (index !== 0 && index !== 121) { // Excluyendo filas específicas
                 // Para el quinto hijo
                 const cell5 = row.querySelector("td:nth-child(5)");
                 const value5 = parseFloat(cell5.textContent.replace(/[^0-9.-]+/g, ""));
@@ -308,7 +308,7 @@ function toggleDiscount() {
     const rows = document.querySelectorAll("#preview table tr");
 
     rows.forEach((row, index) => {
-        if (index !== 0 && index !== 120) {
+        if (index !== 0 && index !== 121) {
             // Aplicando o quitando el descuento para el quinto y séptimo hijo
             const cell5 = row.querySelector("td:nth-child(5)");
             const cell7 = row.querySelector("td:nth-child(7)");
@@ -337,8 +337,8 @@ function toggleDiscount() {
 function showSaleValues() {
     const rows = document.querySelectorAll("#preview table tr");
     rows.forEach(function (row, index) {
-        // Ignorar las filas con índice 1 y 121
-        if (index === 0 || index === 121) return;
+        // Ignorar las filas con índice 1 y 122
+        if (index === 0 || index === 122) return;
 
         const cell = row.querySelector("td:nth-child(7)");
         cell.textContent = saleValues[index - 1];
@@ -402,13 +402,13 @@ function applyStylesToTable() {
         // Estilos especiales para posiciones específicas
         if (rowIndex === 0) {
             applyStyle(cell, { backgroundColor: "#7030A0", color: "#ffffff" });
-        } else if (rowIndex === 120 && columnIndex <= 9) {
+        } else if (rowIndex === 121 && columnIndex <= 9) {
             applyStyle(cell, { backgroundColor: "#7030A0", color: "#ffffff" });
-        } else if (rowIndex === 121 && (columnIndex === 9 || columnIndex === 2)) {
+        } else if (rowIndex === 122 && (columnIndex === 9 || columnIndex === 2)) {
             applyStyle(cell, { backgroundColor: "#F2F2F2" });
-        } else if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 121 && rowIndex !== 120) {
+        } else if (columnIndex === 3 && rowIndex >= 1 && rowIndex <= 122 && rowIndex !== 121) {
             applyStyle(cell, { backgroundColor: "#A5A5A5", color: "#ffffff" });
-        } else if (columnIndex === 10 && cellContent !== "" && rowIndex >= 1 && rowIndex <= 121 && rowIndex !== 120) {
+        } else if (columnIndex === 10 && cellContent !== "" && rowIndex >= 1 && rowIndex <= 122 && rowIndex !== 121) {
             applyStyle(cell, { backgroundColor: "#95DFDB" });
         }
 
@@ -423,9 +423,9 @@ function applyStylesToTable() {
     });
 }
 
-// Función para ocultar las filas desde la 121 hacia abajo
+// Función para ocultar las filas desde la 122 hacia abajo
 function hideHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+121)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+122)");
     hiddenRows.forEach(row => {
         row.style.display = "none";
     });
@@ -433,7 +433,7 @@ function hideHiddenRows() {
 
 // Funcion para mostrar las tablas ocultas en la funcion de mostrar estadisticas
 function showHiddenRows() {
-    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+121)");
+    const hiddenRows = document.querySelectorAll("#preview table tr:nth-child(n+122)");
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
