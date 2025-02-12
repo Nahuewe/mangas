@@ -163,6 +163,7 @@ const suggestions = [
     "Boy Meets Maria",
     "K-ON!",
     "Me Acuesto con mi Amiga Casada",
+    "Bibliomania Deluxe",
     "Us",
     "Hot Paprika"
 ]
