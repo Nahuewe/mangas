@@ -165,5 +165,6 @@ const suggestions = [
     "Me Acuesto con mi Amiga Casada",
     "Bibliomania Deluxe",
     "Us",
-    "Hot Paprika"
+    "Hot Paprika",
+    "Sweet Paprika"
 ]
