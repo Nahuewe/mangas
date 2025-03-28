@@ -436,8 +436,24 @@ function showHiddenRows() {
     const button = document.getElementById("showHiddenRowsButton");
 
     if (button.dataset.clicked === "true") {
+        let visibleRowsFound = 0;
         hiddenRows.forEach(row => {
-            row.style.display = "table-row";
+            const cells = row.querySelectorAll("td");
+            const hasContent = Array.from(cells).some(cell => 
+                cell.textContent.trim() !== "" && 
+                cell.textContent.trim().toLowerCase() !== "total"
+            );
+
+            if (hasContent) {
+                row.style.display = "table-row";
+                visibleRowsFound++;
+            } else {
+                row.style.display = "none";
+            }
+
+            if (visibleRowsFound >= 10) {
+                return;
+            }
         });
     } else {
         hiddenRows.forEach(row => {
