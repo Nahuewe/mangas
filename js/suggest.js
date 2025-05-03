@@ -55,10 +55,9 @@ const suggestions = [
     "Miraculous",
     "Hikaru Ga Shinda Natsu",
     "Elden Ring",
+    "Heart Program",
     "The Guy she was Interested in Wasn't a Guy at all",
-    "Oshi no Ko",
     "Rooster Fighter",
-    "Dead Dead Demon's Dededede Destruction",
     "Un Extraño en Primavera",
     "Spy x Family",
     "Blue Lock",
@@ -74,7 +73,7 @@ const suggestions = [
     "La Tierra de las Gemas",
     "Las Montañas de la Locura",
     "Hooky",
-    "Sweet Paprika",
+    "Sweet Paprika + Hot Paprika",
     "Boyfriends",
     "Kaguya-Sama: Love is War",
     "All you Need is Kill",
@@ -84,6 +83,8 @@ const suggestions = [
     "Your Lie in April",
     "Fire Punch",
     "Aku no Hana",
+    "Dead Dead Demon's Dededede Destruction",
+    "Oshi no Ko",
     "El Pecado Original de Takopi",
     "The Goldeen Sheep",
     "Museum",
@@ -164,6 +165,7 @@ const suggestions = [
     "Home Far Away",
     "¿Mi Hobby es Raro?",
     "No me Calientes asi",
+    "Abrazando tu Noche",
     "Boy Meets Maria",
     "K-ON!",
     "Me Acuesto con mi Amiga Casada",
@@ -171,4 +173,4 @@ const suggestions = [
     "Bibliomania Deluxe",
     "Us",
     "Hot Paprika"
-]
+  ]  
