@@ -59,6 +59,7 @@ const suggestions = [
     "The Guy she was Interested in Wasn't a Guy at all",
     "Rooster Fighter",
     "Un Extraño en Primavera",
+    "Adaban",
     "Spy x Family",
     "Blue Lock",
     "Blue Lock: Episode Nagi",
@@ -173,4 +174,4 @@ const suggestions = [
     "Bibliomania Deluxe",
     "Us",
     "Hot Paprika"
-  ]  
+  ]
