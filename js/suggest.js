@@ -56,6 +56,8 @@ const suggestions = [
     "Hikaru Ga Shinda Natsu",
     "Elden Ring",
     "Heart Program",
+    "Trabajo y Vida Privado On/Off",
+    "Ruri Dragon",
     "The Guy she was Interested in Wasn't a Guy at all",
     "Rooster Fighter",
     "Un Extraño en Primavera",
