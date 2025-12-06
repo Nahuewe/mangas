@@ -95,6 +95,7 @@ const suggestions = [
     "Oyasumi Punpun",
     "Darling in the Franxx",
     "Danganronpa",
+    "Danganronpa 2",
     "Madoka Magica",
     "Madoka Magica: Rebelion",
     "Madoka Magica: The Different Story",
