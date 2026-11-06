@@ -33,9 +33,17 @@ No hace falta escribir nada a mano: con solo subir el Excel, el changelog se com
 
 El botón "Precio de Venta" en la barra superior multiplica todos los precios mostrados por un factor configurable (`PRECIO_VENTA_RATE` en `src/lib/config.ts`, por defecto 0.6). Sirve para ver de un vistazo cuánto sale vender la colección, sin alterar los datos originales del Excel.
 
-### Acceso con contraseña
+### Acceso para subir catálogos
 
-Para subir un catálogo nuevo hace falta ingresar una contraseña (configurable en `src/lib/config.ts` → `UPLOAD_PASSWORD`, por defecto `1234`). Es una validación simple del lado del cliente, pensada para evitar que cualquiera suba archivos por error, no como seguridad real — si necesitás algo más estricto convendría pasar la validación a una función de Supabase (Edge Function) o a políticas RLS más restrictivas.
+Para subir un catálogo nuevo hay que iniciar sesión con **Supabase Auth** (email + contraseña de un usuario que creás vos en el panel de Supabase). La lectura del catálogo sigue siendo pública, pero la escritura (subir archivos, cambiar la versión activa, guardar el historial) solo la permiten las políticas RLS a usuarios autenticados; ya no hay ninguna contraseña dentro del código de la app. Ver el paso 4 del setup.
+
+### Otras funciones
+
+- **Orden por columna:** clic en el encabezado de la tabla (asc → desc → sin orden).
+- **Estado en la URL:** búsqueda, filtros y orden quedan en la dirección, así que se pueden compartir o guardar como favorito.
+- **Vista previa al subir:** antes de confirmar se muestran las series/tomos y los cambios detectados.
+- **Caché local:** el catálogo ya procesado se guarda en el navegador (los archivos subidos nunca cambian), así que no se descarga el Excel en cada visita.
+- **Encabezados del Excel:** las columnas se detectan por el nombre del encabezado (Estado, Editorial, Serie, Tomos, Precio unit., Tamaño, Valor total, Estado serie, Autor/a, Dibujante, Me falta leer). Si no se reconocen, se usa el orden clásico.
 
 ---
 
@@ -76,24 +84,9 @@ create table manga_changelog (
   created_at timestamptz not null default now()
 );
 
--- Permitir lectura pública de ambas tablas
+-- Las políticas de seguridad (RLS) se crean en el paso 4 con supabase/policies.sql
 alter table manga_files enable row level security;
 alter table manga_changelog enable row level security;
-
-create policy "Lectura pública manga_files"
-  on manga_files for select using (true);
-
-create policy "Inserción pública manga_files"
-  on manga_files for insert with check (true);
-
-create policy "Update público manga_files"
-  on manga_files for update using (true);
-
-create policy "Lectura pública changelog"
-  on manga_changelog for select using (true);
-
-create policy "Inserción pública changelog"
-  on manga_changelog for insert with check (true);
 ```
 
 Si ya tenías las tablas creadas de una versión anterior de la app (sin `label`, `series_count`, `tomos_count`, `fuente` o `file_id`), corré esto en cambio:
@@ -116,27 +109,19 @@ En **Storage → New bucket**:
 - Nombre: `manga-files`
 - Public: **NO** (privado, los archivos se descargan via SDK con la anon key)
 
-Luego en **Policies** del bucket, agregá estas dos políticas:
-
-**Para subir archivos (INSERT):**
-```sql
--- Policy name: "Allow public uploads"
--- Allowed operation: INSERT
--- Target roles: anon
-true
-```
-
-**Para descargar archivos (SELECT):**
-```sql
--- Policy name: "Allow public downloads"  
--- Allowed operation: SELECT
--- Target roles: anon
-true
-```
+Las políticas del bucket (descarga pública, subida solo autenticada) también las crea `supabase/policies.sql`.
 
 ---
 
-### 4. Variables de entorno
+### 4. Usuario administrador y políticas de seguridad
+
+1. **Authentication → Users → Add user**: creá tu usuario (email + contraseña).
+2. **Authentication → Sign In / Providers**: desactivá el registro de nuevos usuarios ("Allow new users to sign up").
+3. Ejecutá [`supabase/policies.sql`](supabase/policies.sql) en el SQL Editor.
+
+---
+
+### 5. Variables de entorno
 
 Creá un archivo `.env` en la raíz del proyecto (copiá `.env.example`):
 
@@ -154,12 +139,6 @@ npm install
 npm run dev
 ```
 
+Otros comandos: `npm test` (tests de parser, diff y formato), `npm run lint`, `npm run format` y `npm run build`.
+
 ---
-
-## Cambiar la contraseña de admin
-
-Abrí `src/lib/config.ts` y cambiá:
-
-```ts
-export const UPLOAD_PASSWORD = '1234'
-```

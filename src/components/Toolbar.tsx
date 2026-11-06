@@ -1,70 +1,129 @@
-import { useRef, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import type { PriceMode } from '../lib/config'
+import { FilterIcon, PriceIcon, SearchIcon, UploadIcon, XIcon } from './icons'
 
 interface Props {
   search: string
   onSearchChange: (v: string) => void
-  onClearSearch: () => void
   autocompleteOptions: string[]
-  onAutocompleteSelect: (v: string) => void
   filtersOpen: boolean
   onToggleFilters: () => void
   activeFilterCount: number
-  priceMode: 'lista' | 'venta'
+  priceMode: PriceMode
   onTogglePriceMode: () => void
   onUploadClick: () => void
 }
 
-export function Toolbar({
-  search, onSearchChange, onClearSearch,
-  autocompleteOptions, onAutocompleteSelect,
-  filtersOpen, onToggleFilters, activeFilterCount,
-  priceMode, onTogglePriceMode, onUploadClick,
-}: Props) {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const [showSuggestions, setShowSuggestions] = useState(false)
+const BTN_BASE =
+  'inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition'
+const BTN_IDLE = 'bg-surface border-border text-fg'
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Escape') { onClearSearch() }
-    if (e.key === 'Enter' && autocompleteOptions[0]) {
-      onAutocompleteSelect(autocompleteOptions[0])
-      setShowSuggestions(false)
+export function Toolbar({
+  search,
+  onSearchChange,
+  autocompleteOptions,
+  filtersOpen,
+  onToggleFilters,
+  activeFilterCount,
+  priceMode,
+  onTogglePriceMode,
+  onUploadClick,
+}: Props) {
+  const listId = useId()
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState(-1)
+
+  const expanded = open && autocompleteOptions.length > 0
+
+  useEffect(() => setActive(-1), [autocompleteOptions])
+
+  function select(value: string) {
+    onSearchChange(value)
+    setOpen(false)
+    setActive(-1)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setOpen(true)
+        setActive((i) => (i + 1) % Math.max(autocompleteOptions.length, 1))
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setActive((i) => (i <= 0 ? autocompleteOptions.length - 1 : i - 1))
+        break
+      case 'Enter':
+        if (expanded && autocompleteOptions.length > 0) {
+          e.preventDefault()
+          select(autocompleteOptions[active >= 0 ? active : 0])
+        }
+        break
+      case 'Escape':
+        if (expanded) setOpen(false)
+        else onSearchChange('')
+        break
     }
   }
 
   return (
     <div className="flex items-center gap-2 flex-wrap mb-2">
-      <div ref={wrapperRef} className="relative flex-1 min-w-[200px] max-w-sm">
-        <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7878a0] pointer-events-none" />
+      <div className="relative flex-1 min-w-[200px] max-w-sm">
+        <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-tmuted pointer-events-none" />
         <input
           type="text"
+          role="combobox"
+          aria-label="Buscar manga"
+          aria-expanded={expanded}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={expanded && active >= 0 ? `${listId}-${active}` : undefined}
           value={search}
           onChange={(e) => {
             onSearchChange(e.target.value)
-            setShowSuggestions(true)
+            setOpen(true)
           }}
-          onBlur={() => { setTimeout(() => setShowSuggestions(false), 150) }}
-          onFocus={() => { if (autocompleteOptions.length > 0) setShowSuggestions(true) }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setOpen(false)}
           onKeyDown={handleKeyDown}
           placeholder="Buscar manga..."
           autoComplete="off"
-          className="w-full bg-[#17171f] border border-[#2a2a38] rounded-lg text-[#e8e8f0] text-sm pl-8 pr-8 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-[#4a4a6a] transition"
+          className="w-full bg-surface border border-border rounded-lg text-fg text-sm pl-8 pr-8 py-2 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 placeholder:text-tdim transition"
         />
         {search && (
           <button
-            onClick={onClearSearch}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#4a4a6a] hover:text-red-400 transition p-0.5"
+            type="button"
+            aria-label="Limpiar búsqueda"
+            onClick={() => onSearchChange('')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-tdim hover:text-red-400 transition p-0.5"
           >
             <XIcon className="w-3.5 h-3.5" />
           </button>
         )}
 
-        {showSuggestions && autocompleteOptions.length > 0 && (
-          <ul className="absolute top-[calc(100%+4px)] left-0 right-0 bg-[#1e1e28] border border-[#2a2a38] rounded-lg max-h-64 overflow-y-auto z-50 shadow-xl">
-            {autocompleteOptions.map((opt) => (
+        {expanded && (
+          <ul
+            id={listId}
+            role="listbox"
+            className="absolute top-[calc(100%+4px)] left-0 right-0 bg-surface2 border border-border rounded-lg max-h-64 overflow-y-auto z-50 shadow-xl"
+          >
+            {autocompleteOptions.map((opt, i) => (
               <li
                 key={opt}
-                onClick={() => { onAutocompleteSelect(opt); setShowSuggestions(false) }}
-                className="px-3 py-2 text-xs text-[#e8e8f0] cursor-pointer border-b border-[#222230] last:border-b-0 hover:bg-violet-500/15 hover:text-violet-400 transition"
+                id={`${listId}-${i}`}
+                role="option"
+                aria-selected={i === active}
+                // mousedown (y no click) para seleccionar antes de que el input pierda el foco
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  select(opt)
+                }}
+                className={`px-3 py-2 text-xs cursor-pointer border-b border-bordersoft last:border-b-0 transition ${
+                  i === active
+                    ? 'bg-violet-500/15 text-violet-400'
+                    : 'text-fg hover:bg-violet-500/15 hover:text-violet-400'
+                }`}
               >
                 {opt}
               </li>
@@ -75,11 +134,13 @@ export function Toolbar({
 
       <div className="flex gap-2 flex-wrap">
         <button
+          type="button"
+          aria-expanded={filtersOpen}
           onClick={onToggleFilters}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition ${
+          className={`${BTN_BASE} ${
             filtersOpen || activeFilterCount > 0
               ? 'bg-violet-500/15 border-violet-500 text-violet-400'
-              : 'bg-[#17171f] border-[#2a2a38] text-[#e8e8f0] hover:border-violet-500 hover:text-violet-400'
+              : `${BTN_IDLE} hover:border-violet-500 hover:text-violet-400`
           }`}
         >
           <FilterIcon className="w-3.5 h-3.5" />
@@ -92,11 +153,13 @@ export function Toolbar({
         </button>
 
         <button
+          type="button"
+          aria-pressed={priceMode === 'venta'}
           onClick={onTogglePriceMode}
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition ${
+          className={`${BTN_BASE} ${
             priceMode === 'venta'
               ? 'bg-emerald-400/10 border-emerald-400 text-emerald-400'
-              : 'bg-[#17171f] border-[#2a2a38] text-[#e8e8f0] hover:bg-emerald-400/10 hover:border-emerald-400 hover:text-emerald-400'
+              : `${BTN_IDLE} hover:bg-emerald-400/10 hover:border-emerald-400 hover:text-emerald-400`
           }`}
         >
           <PriceIcon className="w-3.5 h-3.5" />
@@ -104,50 +167,14 @@ export function Toolbar({
         </button>
 
         <button
+          type="button"
           onClick={onUploadClick}
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#2a2a38] bg-[#17171f] text-[#e8e8f0] text-xs font-semibold hover:bg-violet-500/10 hover:border-violet-500 hover:text-violet-400 transition"
+          className={`${BTN_BASE} ${BTN_IDLE} hover:bg-violet-500/10 hover:border-violet-500 hover:text-violet-400`}
         >
           <UploadIcon className="w-3.5 h-3.5" />
           Actualizar catálogo
         </button>
       </div>
     </div>
-  )
-}
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-    </svg>
-  )
-}
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
-  )
-}
-function FilterIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-    </svg>
-  )
-}
-function PriceIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
-  )
-}
-function UploadIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-    </svg>
   )
 }

@@ -16,6 +16,8 @@ export default {
         'accent-dim': '#6d28d9',
         tmuted:     '#7878a0',
         tdim:       '#4a4a6a',
+        fg:         '#e8e8f0',
+        thead:      '#1a1528',
       },
     },
   },
